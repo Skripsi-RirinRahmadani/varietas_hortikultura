@@ -5,12 +5,13 @@ import AppLayout from "@/components/AppLayout";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { Prediction } from "@/lib/types";
 
 function ResultsContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const [data, setData] = useState<any>(null);
-  const [history, setHistory] = useState<any[]>([]);
+  const [data, setData] = useState<Prediction | null>(null);
+  const [history, setHistory] = useState<Prediction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

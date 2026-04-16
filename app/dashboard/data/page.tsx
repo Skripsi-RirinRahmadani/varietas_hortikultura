@@ -1,8 +1,29 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { Commodity } from '@/lib/types';
 
 export default function DataManagementPage() {
+  const [commodities, setCommodities] = useState<Commodity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCommodities = async () => {
+      const { data, error } = await supabase
+        .from('commodities')
+        .select('*, district:districts(name)');
+      
+      if (data) {
+        setCommodities(data);
+      }
+      setLoading(false);
+    };
+    fetchCommodities();
+  }, []);
+
   return (
     <AppLayout title="Manajemen Data">
       <div className="max-w-6xl mx-auto space-y-10">
@@ -68,26 +89,29 @@ export default function DataManagementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
-                {[
-                  { name: 'Padi Sawah', soil: 'Aluvial', ph: '6.5', rain: '2,100 mm/th', temp: '27°C', district: 'Lhoksukon', status: 'Unggulan', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDn4vxtJw_VNKaijPH7p6cMWGr9gIZrMcEw7ZwbVErRJ5bnSvSRF3vIawboDYZJALjruESyJTJ8Qrbni51OYDH07TpMt6ANJ2MAsc-ZRi5SPEd_v2fjDmG1ROG1msd0m23VblTchJ7LnM3cpLauWR2zRHXi6rpKo_ZTJ4Bb1M3ihcvdtOC5w3OJedgYn_yoL7tvNYoZ72PD2MLoqv3NqCdIY-Aja6VdQOFK5uZ_DR5fLYeCCVwSrzXKe5cqhtm8MjNS7WnyfSb7vmSr' },
-                  { name: 'Jagung', soil: 'Latosol', ph: '5.8', rain: '1,850 mm/th', temp: '29°C', district: 'Syamtalira Aron', status: 'Biasa', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBUFDeyTpAnCQW9t_rB9QfB_LC4reRC4icEKTb6osukmbUAogOsTNgQbijMjsylLYyCHc2OiloEr1cN5oFg07w7OoUoCBatcegbkJ6oFBNi10ECVX26v-qK8TT1owlSYnPViIyWwJtJAeCi5Yu-BFl_S0QRXaxmyYlpQiCQbBA1zdbIQo0IqC6MOieNYqQmENfIs9fyCXdc_bjm_f14iL2Td4CMnPyYYrxzTzftPTcKJAxgaa5BDbBjm7lcqNrSHiKKmwNk19fyUqUw' },
-                  { name: 'Ubi Kayu', soil: 'Podsolik Red-Yellow', ph: '5.2', rain: '1,200 mm/th', temp: '31°C', district: 'Tanah Jambo Aye', status: 'Biasa', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACTUv0dMl3UiSKn1dpE4oLfiGnF-1o04bbqF3OKwT_6wNqudOuxf7jaIzWhOnLAbjlUcc_6QgfmkVWcoKueT1q9R0AsgAdkCljzgV20lZalXd5GjMoXNJNaTbVuV4-PezQwJ_Uw0IYd-8Lf7RBfveOWWDlKjjYZUSLoTKWEC2uGdJ9GuGErTdvDrROzaaXW6_vb6Q6FbMoGpsiwZnqClU_sPcPu3K3mmqDFVRZHj0CjGC227Q7lSVk7NMQ7dBYLiJpykjCjOr7k3Qe' },
-                  { name: 'Sayuran', soil: 'Andosol', ph: '6.8', rain: '2,400 mm/th', temp: '24°C', district: 'Dewantara', status: 'Unggulan', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAJgoB5mim4yYpCqZHA1GnF6dIGOvgU9IXRtVxfuABA_XPdHmlaept_iQH8ij1IyN8yKxepHc6Dk5zX0sJfdKmLLlklExvnbp_0Xlq3s3H2f3K5a_lhcRcGl1hq-_di_UfLFnSzQn1_4TX3bBGu-rphmesb6ESOrDbfeNEBdoQo6YG4RlYIZKNa0makw5jnAHqnCeQWj3mjDpr43_TvD_bQjfdENk958VOMeMZ6I_nMycxMqUQIeSMCrZBMgEWVoSW5x3wY3WPp5Csj' },
-                ].map((item, id) => (
-                  <tr className="hover:bg-surface-container-low/50 transition-colors group" key={id}>
+                {commodities.map((item) => (
+                  <tr className="hover:bg-surface-container-low/50 transition-colors group" key={item.id}>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-md overflow-hidden bg-surface-container">
-                          <img alt={item.name} className="w-full h-full object-cover" src={item.img} />
+                          {item.image_url && <img alt={item.name} className="w-full h-full object-cover" src={item.image_url} />}
                         </div>
                         <span className="font-bold text-on-surface">{item.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-6 text-on-surface-variant">{item.soil}</td>
-                    <td className="px-4 py-6 text-on-surface font-medium">{item.ph}</td>
-                    <td className="px-4 py-6 text-on-surface-variant font-medium">{item.rain}</td>
-                    <td className="px-4 py-6 text-on-surface-variant font-medium">{item.temp}</td>
-                    <td className="px-4 py-6 text-on-surface">{item.district}</td>
+                    <td className="px-4 py-6 text-on-surface-variant">{item.soil_type}</td>
+                    <td className="px-4 py-6 text-on-surface font-medium">
+                      {item.ph_min} - {item.ph_max}
+                    </td>
+                    <td className="px-4 py-6 text-on-surface-variant font-medium">
+                      {item.rainfall_min} - {item.rainfall_max} mm
+                    </td>
+                    <td className="px-4 py-6 text-on-surface-variant font-medium">
+                      {item.temp_min} - {item.temp_max}°C
+                    </td>
+                    <td className="px-4 py-6 text-on-surface">
+                      {(item as any).district?.name || '---'}
+                    </td>
                     <td className="px-8 py-6 text-right">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
                         item.status === 'Unggulan' 
@@ -99,6 +123,20 @@ export default function DataManagementPage() {
                     </td>
                   </tr>
                 ))}
+                {loading && (
+                  <tr>
+                    <td className="px-8 py-10 text-center" colSpan={7}>
+                      <span className="text-on-surface-variant animate-pulse font-medium">Memuat data repositori...</span>
+                    </td>
+                  </tr>
+                )}
+                {!loading && commodities.length === 0 && (
+                  <tr>
+                    <td className="px-8 py-10 text-center" colSpan={7}>
+                      <span className="text-on-surface-variant font-medium">Tidak ada data ditemukan.</span>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

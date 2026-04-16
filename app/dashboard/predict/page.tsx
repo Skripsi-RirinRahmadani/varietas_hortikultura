@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { Prediction } from '@/lib/types';
 
 export default function PredictPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<Prediction[]>([]);
   
   const [formData, setFormData] = useState({
     soil_type: '',
@@ -22,7 +23,7 @@ export default function PredictPage() {
     const fetchLatestHistory = async () => {
       const { data } = await supabase
         .from('predictions')
-        .select('id, created_at, variety_name, soil_type')
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(2);
       if (data) setHistory(data);
