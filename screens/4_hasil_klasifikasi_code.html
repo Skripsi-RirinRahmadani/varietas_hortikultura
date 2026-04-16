@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#602d00",
+                    "surface-bright": "#faf9f5",
+                    "on-primary-fixed": "#002204",
+                    "on-secondary-container": "#79574c",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#311300",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#ffdbcf",
+                    "secondary-fixed-dim": "#e9bdae",
+                    "surface-variant": "#e2e3df",
+                    "inverse-on-surface": "#f1f1ed",
+                    "primary-fixed": "#a3f69c",
+                    "primary-container": "#065f18",
+                    "tertiary-fixed": "#ffdcc7",
+                    "primary": "#00450d",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "on-primary-fixed-variant": "#005312",
+                    "tertiary-container": "#833f00",
+                    "on-secondary-fixed": "#2d150d",
+                    "surface-container-high": "#e8e8e4",
+                    "outline": "#717a6d",
+                    "surface-tint": "#1b6d24",
+                    "inverse-primary": "#88d982",
+                    "surface-container-highest": "#e2e3df",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#ffb584",
+                    "secondary-container": "#fed0c1",
+                    "surface-container": "#eeeeea",
+                    "inverse-surface": "#2f312e",
+                    "background": "#faf9f5",
+                    "on-background": "#1a1c1a",
+                    "outline-variant": "#c0c9bb",
+                    "surface-dim": "#dadad6",
+                    "on-surface": "#1a1c1a",
+                    "surface": "#faf9f5",
+                    "on-surface-variant": "#41493e",
+                    "primary-fixed-dim": "#88d982",
+                    "tertiary-fixed-dim": "#ffb787",
+                    "on-primary-container": "#86d881",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#f4f4f0",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#79564b",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#5e3f35"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9f5; color: #1a1c1a; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .confusion-matrix-grid { display: grid; grid-template-columns: auto 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 4px; }
+        .glass-header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- SideNavBar -->
+<aside class="flex flex-col fixed left-0 top-0 h-full p-4 space-y-6 bg-[#eeeeea] h-screen w-64 border-r-0 z-40 hidden md:flex">
+<div class="px-2 py-4">
+<h2 class="font-['Manrope'] font-extrabold text-green-900 text-xl tracking-tight">Dinas Pertanian</h2>
+<p class="text-xs font-['Inter'] text-stone-600 tracking-widest uppercase">Aceh Utara</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center space-x-3 px-4 py-3 text-stone-600 hover:text-green-800 hover:translate-x-1 transition-transform duration-200 font-medium rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 text-stone-600 hover:text-green-800 hover:translate-x-1 transition-transform duration-200 font-medium rounded-lg" href="#">
+<span class="material-symbols-outlined">database</span>
+<span>Data Management</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 bg-white text-green-900 font-bold rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span>Recommendations</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2 border-t border-stone-200 pt-4">
+<button class="w-full mb-4 bg-gradient-to-br from-primary to-primary-container text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-primary/10 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>New Analysis</span>
+</button>
+<a class="flex items-center space-x-3 px-4 py-2 text-stone-600 hover:text-green-800 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2 text-stone-600 hover:text-green-800 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span>Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<div class="md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-0 md:left-64 z-50 bg-[#faf9f5]/80 backdrop-blur-xl shadow-sm h-16">
+<div class="flex justify-between items-center px-6 h-full max-w-screen-2xl mx-auto">
+<div class="flex items-center space-x-4">
+<span class="text-sm font-black uppercase tracking-[0.05em] text-green-950 font-['Manrope']">Evaluation Results</span>
+</div>
+<div class="flex items-center space-x-4">
+<button class="p-2 text-stone-500 hover:bg-stone-100/50 transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-stone-500 hover:bg-stone-100/50 transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="close-up of a professional government official portrait in a clean office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBj_7OQ7UJAhhsqf3OmOEbNVvUTDnXm1qLZgkP3aZOdlvHva5IRG9OvzAnPeWmOxworzhx-9_LpaRhQeBoN1KiJxh9CXDHtzLQsawJOAv0cVb-dxox98o6frEtfGLntujalOB0u9HdIdlbRYkSwHaiXK02An6td4euR5j4qFXpIM8u8IbYIwUoQoy6I1qg6YAg1QvRyNX3USlkTYWyoRs7OYSxjsf3krecTXLhrNs-MXJVYsdgk9TWx9dPfSJBA_xBW6kV31kqikJJ8"/>
+</div>
+</div>
+</div>
+<div class="bg-stone-200/20 h-[1px] w-full block"></div>
+</header>
+<!-- Main Body Area -->
+<main class="pt-24 px-6 pb-12 max-w-screen-2xl mx-auto w-full">
+<div class="mb-8">
+<h1 class="font-headline text-4xl font-extrabold text-primary tracking-tight mb-2">Varietas Classification</h1>
+<p class="font-body text-on-surface-variant text-lg">Detailed performance evaluation and final crop variety prediction report.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Prediction Result Section (Large Card) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-xl p-8 border-none shadow-sm flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16"></div>
+<div class="w-32 h-32 rounded-full bg-primary-container/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-6xl text-primary" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<span class="font-label text-xs font-bold uppercase tracking-widest text-primary-container mb-2 block">Final Prediction Result</span>
+<h2 class="font-headline text-5xl font-extrabold text-on-surface mb-3 tracking-tighter">Varietas Unggulan</h2>
+<p class="text-on-surface-variant leading-relaxed max-w-xl">Berdasarkan parameter analisis tanah, iklim, dan sejarah panen, sistem mengklasifikasikan benih ini ke dalam kategori varietas dengan potensi hasil tinggi untuk wilayah Aceh Utara.</p>
+</div>
+<div class="flex-shrink-0">
+<div class="bg-primary/10 border border-primary/20 px-6 py-4 rounded-xl text-center">
+<p class="text-[10px] uppercase font-bold text-primary tracking-widest mb-1">Confidence Score</p>
+<p class="text-3xl font-black text-primary">98.4%</p>
+</div>
+</div>
+</div>
+<!-- Evaluation Metrics Scorecard -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Accuracy -->
+<div class="bg-surface-container-low p-6 rounded-xl border-none">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-label">Accuracy</span>
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+</div>
+<div class="text-3xl font-black text-on-surface">0.96</div>
+<div class="mt-2 h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 96%;"></div>
+</div>
+</div>
+<!-- Precision -->
+<div class="bg-surface-container-low p-6 rounded-xl border-none">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-label">Precision</span>
+<span class="material-symbols-outlined text-primary text-sm">ads_click</span>
+</div>
+<div class="text-3xl font-black text-on-surface">0.94</div>
+<div class="mt-2 h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 94%;"></div>
+</div>
+</div>
+<!-- Recall -->
+<div class="bg-surface-container-low p-6 rounded-xl border-none">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-label">Recall</span>
+<span class="material-symbols-outlined text-primary text-sm">history</span>
+</div>
+<div class="text-3xl font-black text-on-surface">0.97</div>
+<div class="mt-2 h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 97%;"></div>
+</div>
+</div>
+<!-- F1-Score -->
+<div class="bg-surface-container-low p-6 rounded-xl border-none">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-label">F1-Score</span>
+<span class="material-symbols-outlined text-primary text-sm">functions</span>
+</div>
+<div class="text-3xl font-black text-on-surface">0.95</div>
+<div class="mt-2 h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 95%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Confusion Matrix Visualization (Asymmetric Sidebar/Card) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-xl p-8 border-none shadow-sm h-full">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-lg text-on-surface">Confusion Matrix</h3>
+<span class="material-symbols-outlined text-on-surface-variant">info</span>
+</div>
+<div class="confusion-matrix-grid text-sm">
+<!-- Header Corner -->
+<div></div>
+<div class="text-center font-bold text-on-surface-variant py-2">Pred: Unggul</div>
+<div class="text-center font-bold text-on-surface-variant py-2">Pred: Biasa</div>
+<!-- Row 1 Label -->
+<div class="flex items-center font-bold text-on-surface-variant pr-4">Actual: Unggul</div>
+<!-- True Positive -->
+<div class="aspect-square bg-primary-container text-white flex flex-col items-center justify-center rounded-lg shadow-inner">
+<span class="text-2xl font-black">142</span>
+<span class="text-[10px] font-medium opacity-80 uppercase tracking-tighter">True Pos</span>
+</div>
+<!-- False Negative -->
+<div class="aspect-square bg-tertiary-container/20 text-tertiary flex flex-col items-center justify-center rounded-lg">
+<span class="text-2xl font-black">8</span>
+<span class="text-[10px] font-medium opacity-80 uppercase tracking-tighter">False Neg</span>
+</div>
+<!-- Row 2 Label -->
+<div class="flex items-center font-bold text-on-surface-variant pr-4">Actual: Biasa</div>
+<!-- False Positive -->
+<div class="aspect-square bg-tertiary-container/20 text-tertiary flex flex-col items-center justify-center rounded-lg">
+<span class="text-2xl font-black">4</span>
+<span class="text-[10px] font-medium opacity-80 uppercase tracking-tighter">False Pos</span>
+</div>
+<!-- True Negative -->
+<div class="aspect-square bg-primary-container/60 text-white flex flex-col items-center justify-center rounded-lg shadow-inner">
+<span class="text-2xl font-black">86</span>
+<span class="text-[10px] font-medium opacity-80 uppercase tracking-tighter">True Neg</span>
+</div>
+</div>
+<div class="mt-8 p-4 bg-surface-container-low rounded-lg">
+<p class="text-xs text-on-surface-variant leading-relaxed">
+<span class="font-bold text-primary">Insight:</span> Model memiliki tingkat kesalahan False Negative yang sangat rendah (8), memastikan benih berkualitas tinggi jarang terabaikan.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Recommendation Card Section -->
+<div class="lg:col-span-12">
+<div class="bg-surface p-6 rounded-xl">
+<div class="flex items-center space-x-2 mb-4">
+<span class="text-[10px] font-bold font-headline uppercase tracking-widest text-on-surface px-3 py-1 bg-surface-container-highest rounded-full">Dinas Pertanian Recommendation</span>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="max-w-2xl">
+<h4 class="font-headline text-2xl font-bold text-primary mb-4">Optimasi Pengolahan Tanah</h4>
+<p class="text-on-surface-variant leading-relaxed">Varietas Unggulan ini membutuhkan kadar Nitrogen yang optimal. Direkomendasikan pemupukan tahap awal menggunakan pupuk organik sebanyak 2 ton/hektar untuk memaksimalkan potensi genetik hasil panen yang diprediksi sistem.</p>
+</div>
+<button class="px-8 py-4 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-md hover:shadow-lg transition-all active:scale-95">
+                                    Unduh Sertifikat Benih
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Signature Footer -->
+<footer class="mt-auto py-8 px-6 text-right border-t border-stone-200">
+<p class="font-['Inter'] text-[10px] font-medium uppercase tracking-[0.2em] text-on-surface-variant">Dinas Pertanian dan Tanaman Pangan Kabupaten Aceh Utara</p>
+</footer>
+</div>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t-0 flex justify-around py-3 px-2 z-50 shadow-[0_-4px_24px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center space-y-1 text-stone-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Dash</span>
+</a>
+<a class="flex flex-col items-center space-y-1 text-stone-400" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="text-[10px] font-bold">Data</span>
+</a>
+<a class="flex flex-col items-center space-y-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="text-[10px] font-bold">Result</span>
+</a>
+<a class="flex flex-col items-center space-y-1 text-stone-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Setup</span>
+</a>
+</nav>
+</body></html>

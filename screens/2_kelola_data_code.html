@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary": "#602d00",
+            "surface-bright": "#faf9f5",
+            "on-primary-fixed": "#002204",
+            "on-secondary-container": "#79574c",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#311300",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#ffdbcf",
+            "secondary-fixed-dim": "#e9bdae",
+            "surface-variant": "#e2e3df",
+            "inverse-on-surface": "#f1f1ed",
+            "primary-fixed": "#a3f69c",
+            "primary-container": "#065f18",
+            "tertiary-container": "#833f00",
+            "on-secondary-fixed": "#2d150d",
+            "surface-container-high": "#e8e8e4",
+            "outline": "#717a6d",
+            "surface-tint": "#1b6d24",
+            "inverse-primary": "#88d982",
+            "surface-container-highest": "#e2e3df",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#ffb584",
+            "secondary-container": "#fed0c1",
+            "surface-container": "#eeeeea",
+            "inverse-surface": "#2f312e",
+            "background": "#faf9f5",
+            "on-background": "#1a1c1a",
+            "outline-variant": "#c0c9bb",
+            "surface-dim": "#dadad6",
+            "on-surface": "#1a1c1a",
+            "surface": "#faf9f5",
+            "on-surface-variant": "#41493e",
+            "primary-fixed-dim": "#88d982",
+            "tertiary-fixed-dim": "#ffb787",
+            "on-primary-container": "#86d881",
+            "on-secondary": "#ffffff",
+            "surface-container-low": "#f4f4f0",
+            "on-tertiary": "#ffffff",
+            "secondary": "#79564b",
+            "on-error-container": "#93000a",
+            "on-secondary-fixed-variant": "#5e3f35",
+            "primary": "#00450d"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .headline-font { font-family: 'Manrope', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#faf9f5]/80 dark:bg-stone-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 h-16 w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-sm font-black uppercase tracking-[0.05em] text-green-950 dark:text-green-100 headline-font">Dinas Pertanian dan Tanaman Pangan Aceh Utara</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-stone-500 dark:text-stone-400 font-medium hover:bg-stone-100/50 dark:hover:bg-stone-800/50 transition-colors px-3 py-1 rounded-md" href="#">Home</a>
+<a class="text-green-900 dark:text-green-400 font-semibold hover:bg-stone-100/50 dark:hover:bg-stone-800/50 transition-colors px-3 py-1 rounded-md" href="#">Data Management</a>
+<a class="text-stone-500 dark:text-stone-400 font-medium hover:bg-stone-100/50 dark:hover:bg-stone-800/50 transition-colors px-3 py-1 rounded-md" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-green-900 dark:text-green-50 p-2 hover:bg-stone-100/50 rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined text-green-900 dark:text-green-50 p-2 hover:bg-stone-100/50 rounded-full transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full bg-stone-200 overflow-hidden ml-2">
+<img alt="User profile photo" data-alt="close-up professional portrait of a government official in a clean environment with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdc8YmNktJVIUuDG8RqkNG3tvmZpFJ8OY2qo13l5pfZeGkAOVRis72qTupyReZOQEwdKx5yhg6K1rLX6bwAPi6uLLDeOq6rzgCKcbWDTjXqEA2jSK9x4RcTecmLQe4jELj_9a_S34XO4g83ISY61hFAp9S4oluSnqZjsTr5_WBJgPJNXK8pQEuWN8L50e8w8PY6Te3Un1knDa97LG0fwIzzR4v457DoWTNRcFVicl5bnyqVQHCOQ7kEbS6WdfcND0vsrISLU-Lv_m7"/>
+</div>
+</div>
+</div>
+<div class="bg-stone-200/20 dark:bg-stone-800/20 h-[1px] w-full block"></div>
+</header>
+<div class="flex pt-16">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 bg-[#eeeeea] dark:bg-stone-950 flex flex-col fixed left-0 top-0 pt-20 p-4 space-y-6 z-40">
+<div class="flex items-center gap-3 px-2 mb-4">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">agriculture</span>
+</div>
+<div>
+<h2 class="font-['Manrope'] font-extrabold text-green-900 dark:text-green-50 text-sm leading-tight">Dinas Pertanian</h2>
+<p class="text-[10px] text-stone-500 uppercase tracking-widest">Aceh Utara</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-stone-600 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300 hover:translate-x-1 transition-transform duration-200 font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+          Dashboard
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 bg-white dark:bg-stone-900 text-green-900 dark:text-green-400 font-bold rounded-lg shadow-sm font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined text-lg">database</span>
+          Data Management
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-stone-600 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300 hover:translate-x-1 transition-transform duration-200 font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined text-lg">psychology</span>
+          Recommendations
+        </a>
+</nav>
+<button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold text-sm shadow-md active:scale-95 duration-150 ease-in-out">
+        New Analysis
+      </button>
+<div class="pt-4 space-y-1 border-t border-stone-300/30">
+<a class="flex items-center gap-3 px-3 py-2.5 text-stone-600 hover:text-green-800 transition-colors font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined text-lg">help</span>
+          Support
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-stone-600 hover:text-green-800 transition-colors font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined text-lg">logout</span>
+          Log Out
+        </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-64 p-8 bg-surface">
+<div class="max-w-6xl mx-auto space-y-10">
+<!-- Editorial Header Section -->
+<section class="relative">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-2">
+<span class="text-primary font-bold tracking-widest text-[10px] uppercase headline-font">Administrative Archive</span>
+<h1 class="text-5xl font-extrabold headline-font tracking-tighter text-on-surface">Agricultural Data Repository</h1>
+<p class="text-on-surface-variant max-w-xl body-lg">Comprehensive soil and climate matrix for crop optimization across the Aceh Utara administrative districts.</p>
+</div>
+<button class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-container transition-all shadow-sm">
+<span class="material-symbols-outlined">auto_fix_high</span>
+              Praproses Data
+            </button>
+</div>
+</section>
+<!-- Search & Filter Area (Bento-lite) -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<div class="md:col-span-8 bg-surface-container-low p-6 rounded-xl">
+<div class="flex items-center gap-4 bg-surface-container-highest px-4 py-3 rounded-lg border-b-2 border-transparent focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/60" placeholder="Search by commodity or district..." type="text"/>
+</div>
+</div>
+<div class="md:col-span-4 bg-surface-container-low p-6 rounded-xl flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Total Records</span>
+<span class="text-3xl font-black headline-font text-primary">1,248</span>
+</div>
+<div class="flex -space-x-2">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">Rice</span>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold">Corn</span>
+</div>
+</div>
+</section>
+<!-- Data Table Section (Editorial Style) -->
+<section class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+<div class="px-8 py-6 flex items-center justify-between">
+<h3 class="headline-font font-bold text-xl text-on-surface">Dataset Exploration</h3>
+<div class="flex gap-2">
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-container rounded-full">filter_list</button>
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-container rounded-full">download</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant text-[11px] font-bold uppercase tracking-[0.1em]">
+<th class="px-8 py-4">Komoditas</th>
+<th class="px-4 py-4">Jenis Tanah</th>
+<th class="px-4 py-4">pH Tanah</th>
+<th class="px-4 py-4">Curah Hujan</th>
+<th class="px-4 py-4">Suhu</th>
+<th class="px-4 py-4">Kecamatan</th>
+<th class="px-8 py-4 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y-0">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md overflow-hidden">
+<img alt="Rice icon" data-alt="close-up of golden rice grains in a paddy field with soft morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn4vxtJw_VNKaijPH7p6cMWGr9gIZrMcEw7ZwbVErRJ5bnSvSRF3vIawboDYZJALjruESyJTJ8Qrbni51OYDH07TpMt6ANJ2MAsc-ZRi5SPEd_v2fjDmG1ROG1msd0m23VblTchJ7LnM3cpLauWR2zRHXi6rpKo_ZTJ4Bb1M3ihcvdtOC5w3OJedgYn_yoL7tvNYoZ72PD2MLoqv3NqCdIY-Aja6VdQOFK5uZ_DR5fLYeCCVwSrzXKe5cqhtm8MjNS7WnyfSb7vmSr"/>
+</div>
+<span class="font-bold text-on-surface">Padi Sawah</span>
+</div>
+</td>
+<td class="px-4 py-6 text-on-surface-variant">Aluvial</td>
+<td class="px-4 py-6 text-on-surface font-medium">6.5</td>
+<td class="px-4 py-6 text-on-surface-variant">2,100 mm/th</td>
+<td class="px-4 py-6 text-on-surface-variant">27°C</td>
+<td class="px-4 py-6 text-on-surface">Lhoksukon</td>
+<td class="px-8 py-6 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-black uppercase tracking-wider">Unggulan</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md overflow-hidden">
+<img alt="Corn icon" data-alt="macro photograph of vibrant yellow corn husk on an organic farm with blurred green background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUFDeyTpAnCQW9t_rB9QfB_LC4reRC4icEKTb6osukmbUAogOsTNgQbijMjsylLYyCHc2OiloEr1cN5oFg07w7OoUoCBatcegbkJ6oFBNi10ECVX26v-qK8TT1owlSYnPViIyWwJtJAeCi5Yu-BFl_S0QRXaxmyYlpQiCQbBA1zdbIQo0IqC6MOieNYqQmENfIs9fyCXdc_bjm_f14iL2Td4CMnPyYYrxzTzftPTcKJAxgaa5BDbBjm7lcqNrSHiKKmwNk19fyUqUw"/>
+</div>
+<span class="font-bold text-on-surface">Jagung</span>
+</div>
+</td>
+<td class="px-4 py-6 text-on-surface-variant">Latosol</td>
+<td class="px-4 py-6 text-on-surface font-medium">5.8</td>
+<td class="px-4 py-6 text-on-surface-variant">1,850 mm/th</td>
+<td class="px-4 py-6 text-on-surface-variant">29°C</td>
+<td class="px-4 py-6 text-on-surface">Syamtalira Aron</td>
+<td class="px-8 py-6 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-black uppercase tracking-wider">Biasa</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md overflow-hidden">
+<img alt="Sweet potato icon" data-alt="uprooted organic sweet potatoes on dark moist soil in an open field under natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACTUv0dMl3UiSKn1dpE4oLfiGnF-1o04bbqF3OKwT_6wNqudOuxf7jaIzWhOnLAbjlUcc_6QgfmkVWcoKueT1q9R0AsgAdkCljzgV20lZalXd5GjMoXNJNaTbVuV4-PezQwJ_Uw0IYd-8Lf7RBfveOWWDlKjjYZUSLoTKWEC2uGdJ9GuGErTdvDrROzaaXW6_vb6Q6FbMoGpsiwZnqClU_sPcPu3K3mmqDFVRZHj0CjGC227Q7lSVk7NMQ7dBYLiJpykjCjOr7k3Qe"/>
+</div>
+<span class="font-bold text-on-surface">Ubi Kayu</span>
+</div>
+</td>
+<td class="px-4 py-6 text-on-surface-variant">Podsolik Red-Yellow</td>
+<td class="px-4 py-6 text-on-surface font-medium">5.2</td>
+<td class="px-4 py-6 text-on-surface-variant">1,200 mm/th</td>
+<td class="px-4 py-6 text-on-surface-variant">31°C</td>
+<td class="px-4 py-6 text-on-surface">Tanah Jambo Aye</td>
+<td class="px-8 py-6 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-black uppercase tracking-wider">Biasa</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md overflow-hidden">
+<img alt="Vegetable icon" data-alt="aerial view of rows of green leafy vegetables on a modern sustainable farm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJgoB5mim4yYpCqZHA1GnF6dIGOvgU9IXRtVxfuABA_XPdHmlaept_iQH8ij1IyN8yKxepHc6Dk5zX0sJfdKmLLlklExvnbp_0Xlq3s3H2f3K5a_lhcRcGl1hq-_di_UfLFnSzQn1_4TX3bBGu-rphmesb6ESOrDbfeNEBdoQo6YG4RlYIZKNa0makw5jnAHqnCeQWj3mjDpr43_TvD_bQjfdENk958VOMeMZ6I_nMycxMqUQIeSMCrZBMgEWVoSW5x3wY3WPp5Csj"/>
+</div>
+<span class="font-bold text-on-surface">Sayuran</span>
+</div>
+</td>
+<td class="px-4 py-6 text-on-surface-variant">Andosol</td>
+<td class="px-4 py-6 text-on-surface font-medium">6.8</td>
+<td class="px-4 py-6 text-on-surface-variant">2,400 mm/th</td>
+<td class="px-4 py-6 text-on-surface-variant">24°C</td>
+<td class="px-4 py-6 text-on-surface">Dewantara</td>
+<td class="px-8 py-6 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-black uppercase tracking-wider">Unggulan</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-8 py-6 flex items-center justify-between border-t border-outline-variant/10">
+<span class="text-xs text-on-surface-variant">Showing 1-10 of 1,248 entries</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-md bg-surface-container-high text-on-surface-variant text-xs font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container text-on-surface-variant text-xs font-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container text-on-surface-variant text-xs font-bold">3</button>
+<span class="w-8 h-8 flex items-center justify-center text-on-surface-variant text-xs">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container text-on-surface-variant text-xs font-bold">125</button>
+</div>
+</div>
+</section>
+<!-- Recommendation Card (Specialized Component) -->
+<section class="bg-surface p-1 rounded-2xl border border-outline-variant/10">
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-4">
+<span class="text-[10px] font-bold text-primary tracking-[0.2em] uppercase headline-font">Dinas Pertanian Identity</span>
+<div class="h-[1px] flex-1 bg-outline-variant/30"></div>
+</div>
+<div class="flex flex-col md:flex-row gap-8 items-start">
+<div class="flex-1 space-y-4">
+<h4 class="text-2xl font-bold headline-font text-on-surface">Data Preprocessing Quality Report</h4>
+<p class="body-lg text-on-surface-variant">The last automated cleaning cycle identified <span class="font-bold text-tertiary">14 inconsistencies</span> in soil pH recordings from Kecamatan Lhoksukon. It is recommended to perform manual verification for the Aluvial soil type entries before the final harvest projection.</p>
+</div>
+<div class="w-full md:w-64 bg-surface-container-low p-6 rounded-xl space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-xs font-semibold text-on-surface-variant">Yield Progress</span>
+<span class="text-xs font-bold text-primary">84%</span>
+</div>
+<div class="w-full h-3 bg-secondary-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[84%] rounded-full"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant/70 italic leading-snug">Projected yield based on current soil humidity and precipitation data.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Institutional Footer -->
+<footer class="mt-16 pt-8 border-t border-outline-variant/10 text-right">
+<span class="text-on-surface font-medium text-[12px] tracking-[0.05em] font-body opacity-60">Dinas Pertanian dan Tanaman Pangan Kabupaten Aceh Utara</span>
+</footer>
+</main>
+</div>
+</body></html>

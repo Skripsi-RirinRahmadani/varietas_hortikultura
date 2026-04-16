@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dinas Pertanian dan Tanaman Pangan Aceh Utara - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#602d00",
+                        "surface-bright": "#faf9f5",
+                        "on-primary-fixed": "#002204",
+                        "on-secondary-container": "#79574c",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#311300",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#ffdbcf",
+                        "secondary-fixed-dim": "#e9bdae",
+                        "surface-variant": "#e2e3df",
+                        "inverse-on-surface": "#f1f1ed",
+                        "primary-fixed": "#a3f69c",
+                        "primary-container": "#065f18",
+                        "tertiary-container": "#833f00",
+                        "on-secondary-fixed": "#2d150d",
+                        "surface-container-high": "#e8e8e4",
+                        "outline": "#717a6d",
+                        "surface-tint": "#1b6d24",
+                        "inverse-primary": "#88d982",
+                        "surface-container-highest": "#e2e3df",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#ffb584",
+                        "secondary-container": "#fed0c1",
+                        "surface-container": "#eeeeea",
+                        "inverse-surface": "#2f312e",
+                        "background": "#faf9f5",
+                        "on-background": "#1a1c1a",
+                        "outline-variant": "#c0c9bb",
+                        "surface-dim": "#dadad6",
+                        "on-surface": "#1a1c1a",
+                        "surface": "#faf9f5",
+                        "on-surface-variant": "#41493e",
+                        "primary-fixed-dim": "#88d982",
+                        "tertiary-fixed-dim": "#ffb787",
+                        "on-primary-container": "#86d881",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f4f4f0",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#79564b",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#5e3f35"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .headline { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased">
+<!-- TopAppBar -->
+<header class="bg-[#faf9f5]/80 dark:bg-stone-900/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 h-16 w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-sm font-black uppercase tracking-[0.05em] text-green-950 dark:text-green-100">Dinas Pertanian dan Tanaman Pangan Aceh Utara</span>
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-1.5 gap-2 border border-outline-variant/10">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder-on-surface-variant/60" placeholder="Search data points..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-green-900 dark:text-green-50 hover:bg-stone-100/50 dark:hover:bg-stone-800/50 transition-colors active:scale-95 duration-150 ease-in-out rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-green-900 dark:text-green-50 hover:bg-stone-100/50 dark:hover:bg-stone-800/50 transition-colors active:scale-95 duration-150 ease-in-out rounded-full">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden ring-2 ring-outline-variant/20">
+<img alt="User profile photo" data-alt="professional headshot of an agronomist or public servant in a clean office setting, natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYrIy4bKv55dC8o-HsMusgXpmWoJpLyZZJQDf5dmp1shpaPj5D92c9xVcFRqtfmZrJ8mhdMdn0TijtpoA9xGizr85EKzwMyTs77hW6fiRHbcNlc-ri2huvkPhRKur2tJr1IvaQhkIqmYA-cjK6Tid3UQ3JpvUMAzTdbalYGznZK8JWugJwdPz8RiskbZSmt9DXrrTc3mdzeUwmJnUOWB70jNYvLd8NEXXBlLWi6LCe7cbz3STVVmJzg9dQIC_ej6Uo6DeFpVm7Xhe3"/>
+</div>
+</div>
+</div>
+<div class="bg-stone-200/20 dark:bg-stone-800/20 h-[1px] w-full block"></div>
+</header>
+<!-- Sidebar Wrapper -->
+<aside class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-4 space-y-6 bg-[#eeeeea] dark:bg-stone-950 z-40 pt-20">
+<div class="px-2">
+<h2 class="font-['Manrope'] font-extrabold text-green-900 dark:text-green-50 text-xl tracking-tight">Dinas Pertanian</h2>
+<p class="text-xs text-on-surface-variant font-medium opacity-70">Aceh Utara</p>
+</div>
+<nav class="flex-1 space-y-1 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-stone-900 text-green-900 dark:text-green-400 font-bold rounded-lg shadow-sm hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-['Inter'] text-sm tracking-wide">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-['Inter'] text-sm tracking-wide">Data Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Inter'] text-sm tracking-wide">Recommendations</span>
+</a>
+</nav>
+<div class="pt-4">
+<button class="w-full py-3 px-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+                New Analysis
+            </button>
+</div>
+<div class="mt-auto border-t border-stone-200 dark:border-stone-800 pt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300 text-sm" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="help">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:text-red-800 dark:hover:text-red-400 text-sm" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                Log Out
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:pl-64 pt-16 min-h-screen">
+<div class="max-w-screen-2xl mx-auto p-6 md:p-10">
+<!-- Page Header -->
+<div class="mb-10">
+<h1 class="text-4xl font-bold tracking-tight text-green-950 mb-2">Agricultural Overview</h1>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed">System performance and crop yield analysis for Kabupaten Aceh Utara. Data synchronized as of today.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- 1. Dataset Summary Card -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/15 flex flex-col justify-between">
+<div>
+<span class="text-xs font-bold uppercase tracking-widest text-primary mb-4 block">Archive Total</span>
+<h2 class="text-6xl font-headline font-extrabold text-green-950 mb-2">12,842</h2>
+<p class="text-on-surface-variant text-sm font-medium">Verified Data Entries</p>
+</div>
+<div class="mt-8 pt-6 border-t border-surface-container">
+<div class="flex items-center justify-between text-sm">
+<span class="text-on-surface-variant">Growth from last quarter</span>
+<span class="text-primary font-bold flex items-center">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="arrow_upward">arrow_upward</span>
+                                8.4%
+                            </span>
+</div>
+</div>
+</div>
+<!-- 2. Model Performance Card (Glassmorphism influence) -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/15 flex flex-col md:flex-row">
+<div class="flex-1 p-8">
+<span class="text-xs font-bold uppercase tracking-widest text-primary mb-4 block">Random Forest Model</span>
+<h3 class="text-2xl font-bold mb-4">Integrity Performance</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-sm font-medium text-on-surface">Training Set (80%)</span>
+<span class="text-sm font-bold text-primary">10,273 records</span>
+</div>
+<div class="h-3 w-full bg-secondary-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[80%] rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-sm font-medium text-on-surface">Testing Set (20%)</span>
+<span class="text-sm font-bold text-tertiary">2,569 records</span>
+</div>
+<div class="h-3 w-full bg-secondary-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[20%] rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="p-4 rounded-lg bg-surface-container-low">
+<p class="text-xs font-semibold text-on-surface-variant uppercase mb-1">Model Accuracy</p>
+<p class="text-2xl font-bold text-green-900">94.2%</p>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-low">
+<p class="text-xs font-semibold text-on-surface-variant uppercase mb-1">Processing Delay</p>
+<p class="text-2xl font-bold text-green-900">0.8s</p>
+</div>
+</div>
+</div>
+<div class="w-full md:w-1/3 bg-primary-container relative min-h-[200px]">
+<img alt="Data visualization pattern" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50" data-alt="close-up of complex server wiring with soft green glowing lights and blurred technology background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSUw7wNiI63Jl66E48mJMrqTYxgWasf2RkYN43YqtyQgIh6bcwdD7QugrqbrvYbFGlWUQG7XeFzsMN3suCoTXGigluBkOVfXy9DN0_YzAqqq1kTorvdijEZ_2JlLRPnSC_51eGzXjsxYSZgpMdl2B9YYgT0u3tcC_ajz3ZJdzHLwdMugNpBS6uxPaosoS7GWwyCOhA7GA_eDYo-koJ7iKibQUA6sJ04BJohF6W8cm_qXe8cUwBivurgPzv7jQElqU8xLGIc-8m5Oxa"/>
+<div class="absolute inset-0 p-8 flex flex-col justify-end text-white">
+<span class="material-symbols-outlined text-4xl mb-4" data-icon="memory" style="font-variation-settings: 'wght' 200;">memory</span>
+<p class="text-sm font-medium leading-tight opacity-90">Random Forest Classifier utilizing 500 decision trees for optimal regional mapping.</p>
+</div>
+</div>
+</div>
+<!-- 3. Statistics Chart (Asymmetric Layout) -->
+<div class="md:col-span-12 bg-surface-container-low rounded-xl p-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+<div>
+<span class="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">Commodity Distribution</span>
+<h3 class="text-3xl font-bold">Top 10 High-Yield Commodities</h3>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold uppercase tracking-tight">Active Season</span>
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-full text-xs font-bold uppercase tracking-tight">2024 Dataset</span>
+</div>
+</div>
+<!-- Visual Bar Chart Component -->
+<div class="space-y-4">
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Chili</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[95%] transition-all"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">2.4k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Tomato</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[88%] transition-all opacity-95"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">2.1k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Watermelon</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[75%] transition-all opacity-90"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">1.8k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Cucumber</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[68%] transition-all opacity-85"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">1.6k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Rice</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[62%] transition-all opacity-80"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">1.5k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Corn</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[55%] transition-all opacity-75"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">1.2k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Shallots</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[48%] transition-all opacity-70"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">1.1k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Cabbage</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[42%] transition-all opacity-65"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">0.9k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Eggplant</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[35%] transition-all opacity-60"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">0.8k Tons</span>
+</div>
+</div>
+<!-- Bar Item -->
+<div class="group flex items-center gap-4">
+<div class="w-24 shrink-0 text-right">
+<span class="text-sm font-bold text-on-surface">Spinach</span>
+</div>
+<div class="flex-1 h-8 bg-surface-container-highest rounded-r-full overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[28%] transition-all opacity-55"></div>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-white">0.6k Tons</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Analysis Card (Asymmetric detail) -->
+<div class="md:col-span-12 p-8 bg-tertiary text-white rounded-xl flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+<div class="z-10 flex-1">
+<h4 class="text-2xl font-bold mb-4">Strategic Soil Intelligence</h4>
+<p class="text-white/80 max-w-xl leading-relaxed mb-6">Our model suggests a 12% increase in potential yield for lowland areas if irrigation schedules are adjusted according to the latest precipitation forecasts.</p>
+<button class="bg-white text-tertiary px-6 py-3 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-white/90 transition-colors">
+                            Explore Recommendations
+                            <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="shrink-0 z-10 hidden md:block">
+<img alt="Agricultural landscape" class="w-64 h-48 rounded-lg object-cover shadow-2xl rotate-3" data-alt="vibrant green rice terrace fields in Indonesia during a clear morning with bright sunlight reflecting on water" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCZYv28zdir_BFormtTcmjPc0wL8TT1NXpLvR3uk2POxPEqdGcSReCLvxLBWqBLOMeTlwMo3SK6ZTHcHa-15lNPUCvo5FPhdzQC0Ymw9-6dtO3AiDlNwS8kaa1idon_poOIM98qal9OE3NcOtEB-UXlCB5DdpLPlvOx-uZtS_QFmjXpDzdSZnKpQYKaN0zO-rcbsy2NPiXeq-D1iPC_MGjmmajlRDLbfuoNxmDikpZGUDwMi8HqcuLPcpxOxwqfuFA0ORy7UhfcZii"/>
+</div>
+<div class="absolute -right-20 -bottom-20 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
+</div>
+</div>
+<!-- Institutional Signature -->
+<footer class="mt-20 py-10 border-t border-surface-container flex flex-col md:flex-row justify-between items-center gap-4">
+<span class="font-['Inter'] font-semibold text-xs uppercase tracking-[0.1em] text-on-surface opacity-60">Dinas Pertanian dan Tanaman Pangan Kabupaten Aceh Utara</span>
+<p class="text-xs text-on-surface-variant">© 2024 Goverment System Architecture. All Rights Reserved.</p>
+</footer>
+</div>
+</main>
+<!-- FAB (Suppressed based on screen context - suppressed on dashboard for clarity) -->
+<!-- Navigation for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-lg px-6 h-16 flex justify-between items-center z-50 border-t border-outline-variant/10">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="text-[10px] font-medium">Data</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="text-[10px] font-medium">Model</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</button>
+</nav>
+</body></html>
