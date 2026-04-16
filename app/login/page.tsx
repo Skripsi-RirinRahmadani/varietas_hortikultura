@@ -57,7 +57,7 @@ export default function LoginPage() {
           
           <form className="space-y-6">
             <div className="space-y-1.5">
-              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="username">Username</label>
+              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="username">Nama Pengguna</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <span className="material-symbols-outlined text-on-surface-variant text-xl group-focus-within:text-primary transition-colors" data-icon="person">person</span>
@@ -75,7 +75,7 @@ export default function LoginPage() {
             </div>
             
             <div className="space-y-1.5">
-              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="password">Password</label>
+              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="password">Kata Sandi</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <span className="material-symbols-outlined text-on-surface-variant text-xl group-focus-within:text-primary transition-colors" data-icon="lock">lock</span>
