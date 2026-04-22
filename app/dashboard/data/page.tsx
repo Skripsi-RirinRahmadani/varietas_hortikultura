@@ -128,262 +128,363 @@ export default function DataManagementPage() {
 
   return (
     <AppLayout title="Manajemen Data">
-      <div className="max-w-6xl mx-auto space-y-10">
-        {/* Editorial Header Section */}
-        <section className="relative">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-700">
+        {/* Header Section */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-background to-background p-8 border border-primary/5 shadow-sm">
+          <div className="absolute top-0 right-0 -m-8 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+          <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
-              <span className="text-primary font-bold tracking-widest text-[10px] uppercase font-headline">Arsip Administratif</span>
-              <h1 className="text-5xl font-extrabold font-headline tracking-tighter text-on-surface">Repositori Data Pertanian</h1>
-              <p className="text-on-surface-variant max-w-xl text-lg opacity-80">Matriks tanah dan iklim komprehensif untuk optimasi tanaman di wilayah Kabupaten Aceh Utara.</p>
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-[2px] bg-primary rounded-full" />
+                <span className="text-primary font-bold tracking-[0.2em] text-[10px] uppercase font-headline">Dataset Unggulan</span>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter text-on-surface">
+                Data <span className="text-primary">Komoditas</span>
+              </h1>
+              <p className="text-on-surface-variant max-w-2xl text-base md:text-lg opacity-70 leading-relaxed font-medium">
+                Pusat manajemen parameter varietas hortikultura untuk optimalisasi pertanian di Kabupaten Aceh Utara.
+              </p>
             </div>
-            <div className="flex gap-3">
-              <Button onClick={handleAdd} className="h-12 px-6 rounded-xl shadow-lg hover:shadow-primary/20 flex items-center gap-2">
-                <span className="material-symbols-outlined">add</span>
-                Tambah Data
+            <div className="flex flex-wrap gap-3">
+              <Button 
+                onClick={handleAdd} 
+                className="group relative overflow-hidden h-12 px-6 rounded-2xl bg-primary text-on-primary hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/20 active:scale-95"
+              >
+                <div className="flex items-center gap-2 relative z-10">
+                  <span className="material-symbols-outlined text-sm transition-transform group-hover:rotate-90 duration-300">add</span>
+                  <span className="text-sm font-bold">Tambah Rekaman</span>
+                </div>
               </Button>
-              <Link href="/dashboard/results" className="flex items-center gap-2 px-6 py-3 bg-surface-container-high text-on-surface rounded-xl font-semibold hover:bg-surface-container-highest transition-all shadow-sm">
-                <span className="material-symbols-outlined">auto_fix_high</span>
-                Proses
+              <Link 
+                href="/dashboard/results" 
+                className="flex items-center gap-2 px-6 h-12 bg-surface-container-highest text-on-surface rounded-2xl font-bold hover:bg-surface-container-high transition-all active:scale-95 border border-outline-variant/10 shadow-sm"
+              >
+                <span className="material-symbols-outlined text-sm">auto_fix_high</span>
+                <span className="text-sm font-bold">Analisis</span>
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Search & Filter Area (Bento-lite) */}
-        <section className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div className="md:col-span-8 bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10">
-            <div className="flex items-center gap-4 bg-surface-container-lowest px-4 py-4 rounded-xl shadow-inner border border-outline-variant/5 focus-within:border-primary/30 transition-all">
-              <span className="material-symbols-outlined text-on-surface-variant">search</span>
-              <input 
-                className="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/60 outline-none" 
-                placeholder="Cari berdasarkan komoditas, jenis tanah atau kecamatan..." 
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-              />
+        {/* Action Toolbar */}
+        <section className="sticky top-20 z-[40] space-y-4">
+            <div className="bg-surface-container-low/80 backdrop-blur-xl p-3 rounded-[2.5rem] border border-outline-variant/20 shadow-xl shadow-surface-container-lowest/50">
+                <div className="flex flex-col md:flex-row gap-3">
+                    <div className="flex-1 flex items-center gap-3 bg-surface-container-lowest px-5 py-3.5 rounded-2xl shadow-inner border border-outline-variant/10 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 transition-all duration-300">
+                        <span className="material-symbols-outlined text-on-surface-variant/50 text-xl">search</span>
+                        <input 
+                            className="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-on-surface-variant/40 outline-none text-sm font-medium" 
+                            placeholder="Cari komoditas, jenis tanah atau lokasi..." 
+                            type="text"
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex gap-2 p-1">
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            className="hidden" 
+                            accept=".csv" 
+                            onChange={handleFileChange}
+                        />
+                        <Button 
+                            onClick={handleImportClick}
+                            variant="outline"
+                            className="h-11 px-6 rounded-xl flex items-center gap-2 border-outline-variant/20 bg-transparent hover:bg-surface-container transition-all"
+                        >
+                            <span className="material-symbols-outlined text-lg">publish</span>
+                            <span className="font-bold text-[10px] uppercase tracking-widest md:block hidden">Import</span>
+                        </Button>
+                        <Button 
+                            onClick={handleExport}
+                            variant="outline"
+                            className="h-11 px-6 rounded-xl flex items-center gap-2 border-outline-variant/20 bg-transparent hover:bg-surface-container transition-all"
+                        >
+                            <span className="material-symbols-outlined text-lg">file_download</span>
+                            <span className="font-bold text-[10px] uppercase tracking-widest md:block hidden">Export</span>
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-between px-4 mt-2">
+                    <div className="flex items-center gap-3">
+                        <div className={`w-1.5 h-1.5 rounded-full ${loading ? 'bg-amber-500 animate-pulse' : 'bg-primary'}`} />
+                        <span className="text-[10px] font-bold text-on-surface-variant/70 uppercase tracking-[0.15em] flex items-center gap-2">
+                            {loading ? 'Menyelaraskan...' : (
+                                <>
+                                    <span className="text-primary font-black">{filteredCommodities.length}</span>
+                                    <span>Dataset Aktif</span>
+                                </>
+                            )}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-1 group">
+                        <span className="text-[9px] font-bold text-on-surface-variant/40 uppercase tracking-widest mr-2 opacity-0 group-hover:opacity-100 transition-opacity">Kontrol Tampilan</span>
+                        <button className="material-symbols-outlined w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all">tune</button>
+                        <button className="material-symbols-outlined w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-all">sort_by_alpha</button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div className="md:col-span-4 bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10 flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Total Rekaman</span>
-              <span className="text-3xl font-black font-headline text-primary">{commodities.length}</span>
-            </div>
-            <div className="flex gap-2">
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept=".csv" 
-                onChange={handleFileChange}
-              />
-              <Button 
-                onClick={handleImportClick}
-                variant="secondary"
-                className="h-12 px-5 rounded-xl flex items-center gap-2 bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-all border-none"
-              >
-                <span className="material-symbols-outlined text-[20px]">upload</span>
-                <span className="font-semibold text-sm">Import CSV</span>
-              </Button>
-              <Button 
-                onClick={handleExport}
-                className="h-12 px-5 rounded-xl flex items-center gap-2 shadow-lg hover:shadow-primary/20 transition-all"
-              >
-                <span className="material-symbols-outlined text-[20px]">download</span>
-                <span className="font-semibold text-sm">Export CSV</span>
-              </Button>
-            </div>
-          </div>
+
         </section>
 
-        {/* Data Table Section (Editorial Style) */}
-        <section className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-xl border border-outline-variant/10 transition-all hover:border-outline-variant/20">
-          <div className="px-8 py-8 flex items-center justify-between border-b border-outline-variant/5 bg-gradient-to-r from-surface-container-lowest to-surface-container-low/30">
-            <div>
-              <h3 className="font-headline font-bold text-2xl text-on-surface">Eksplorasi Dataset</h3>
-              <p className="text-xs text-on-surface-variant opacity-60 font-medium">Data parameter varietas hortikultura unggul</p>
-            </div>
-            <div className="flex gap-2">
-              <button className="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">filter_list</button>
-            </div>
+        {/* Data Content Area */}
+        <section className="pb-20">
+          {/* Mobile Card View */}
+          <div className="grid grid-cols-1 gap-6 md:hidden">
+            {filteredCommodities.map((item, idx) => (
+              <div 
+                key={item.id} 
+                className="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/10 shadow-sm space-y-5 animate-in slide-in-from-bottom-4 duration-500" 
+                style={{ animationDelay: `${idx * 50}ms` }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="relative group">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-surface-container-highest flex items-center justify-center border border-outline-variant/10 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                      {item.image_url ? (
+                        <img alt={item.name} className="w-full h-full object-cover" src={item.image_url} />
+                      ) : (
+                        <span className="material-symbols-outlined text-primary/30 text-2xl">potted_plant</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0 pt-1">
+                    <h3 className="font-extrabold text-lg text-on-surface leading-tight mb-1">{item.name}</h3>
+                    <div className="flex items-center gap-1.5 opacity-60">
+                        <span className="material-symbols-outlined text-xs">location_on</span>
+                        <p className="text-[11px] font-bold uppercase tracking-wider">{item.district?.name || 'Seluruh Wilayah'}</p>
+                    </div>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm ${
+                    item.status === 'Unggulan' 
+                      ? 'bg-primary/10 text-primary border border-primary/20' 
+                      : 'bg-surface-container-highest text-on-surface-variant'
+                  }`}>
+                    {item.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: 'pH Tanah', val: `${item.ph_min}-${item.ph_max}`, icon: 'science' },
+                    { label: 'Curah Hujan', val: `${item.rainfall_min}mm`, icon: 'water_drop' },
+                    { label: 'Suhu Optimal', val: `${item.temp_min}°C`, icon: 'thermostat' }
+                  ].map(stat => (
+                    <div key={stat.label} className="bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/5 text-center">
+                      <span className="material-symbols-outlined text-xs text-on-surface-variant/40 mb-1">{stat.icon}</span>
+                      <p className="text-[8px] font-black text-on-surface-variant/40 uppercase tracking-tighter mb-1">{stat.label}</p>
+                      <p className="text-xs font-black text-on-surface tracking-tight">{stat.val}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                    <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary/30" />
+                        <span className="text-[10px] text-on-surface-variant font-bold italic opacity-50 truncate max-w-[140px]">
+                            {item.soil_type || 'Tanpa keterangan tanah'}
+                        </span>
+                    </div>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => handleEdit(item)}
+                            className="w-11 h-11 flex items-center justify-center bg-primary/5 text-primary hover:bg-primary hover:text-on-primary rounded-xl transition-all duration-300 shadow-sm"
+                        >
+                            <span className="material-symbols-outlined text-lg">edit</span>
+                        </button>
+                        <button 
+                            onClick={() => handleDelete(item.id)}
+                            className="w-11 h-11 flex items-center justify-center bg-error/5 text-error hover:bg-error hover:text-white rounded-xl transition-all duration-300 shadow-sm"
+                        >
+                            <span className="material-symbols-outlined text-lg">delete</span>
+                        </button>
+                    </div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-surface-container-low/50 text-on-surface-variant text-[10px] font-black uppercase tracking-[0.2em]">
-                  <th className="px-8 py-5">Komoditas</th>
-                  <th className="px-4 py-5">Jenis Tanah</th>
-                  <th className="px-4 py-5">pH Tanah</th>
-                  <th className="px-4 py-5">Curah Hujan</th>
-                  <th className="px-4 py-5">Suhu</th>
-                  <th className="px-4 py-5">Kecamatan</th>
-                  <th className="px-4 py-5">Status</th>
-                  <th className="px-8 py-5 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-outline-variant/5">
-                {filteredCommodities.map((item) => (
-                  <tr className="hover:bg-surface-container-low/40 transition-all group" key={item.id}>
-                    <td className="px-8 py-8">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-surface-container-highest flex items-center justify-center border border-outline-variant/10 shadow-sm">
-                          {item.image_url ? (
-                            <img alt={item.name} className="w-full h-full object-cover" src={item.image_url} />
-                          ) : (
-                            <span className="material-symbols-outlined text-primary/40">potted_plant</span>
-                          )}
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-surface-container-lowest rounded-[2.5rem] overflow-hidden shadow-2xl shadow-surface-container-lowest/10 border border-outline-variant/10">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-surface-container-low/50 text-on-surface-variant border-b border-outline-variant/10">
+                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em]">Komoditas & Tanah</th>
+                    <th className="px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em]">Biometrik Lingkungan</th>
+                    <th className="px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em]">Wilayah</th>
+                    <th className="px-6 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-center">Status</th>
+                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-right">Manajemen</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-outline-variant/5">
+                  {filteredCommodities.map((item) => (
+                    <tr className="hover:bg-primary/[0.02] transition-colors group" key={item.id}>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="relative w-12 h-12 flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
+                            <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-surface-container-highest flex items-center justify-center border border-outline-variant/10 z-10">
+                                {item.image_url ? (
+                                <img alt={item.name} className="w-full h-full object-cover" src={item.image_url} />
+                                ) : (
+                                <span className="material-symbols-outlined text-primary/30 text-lg">potted_plant</span>
+                                )}
+                            </div>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-black text-on-surface text-lg tracking-tight group-hover:text-primary transition-colors">{item.name}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-outline-variant/30" />
+                                <p className="text-[11px] text-on-surface-variant font-bold opacity-60 truncate max-w-[200px]">{item.soil_type || 'Tanpa keterangan khusus'}</p>
+                            </div>
+                          </div>
                         </div>
-                        <span className="font-bold text-on-surface text-lg tracking-tight group-hover:text-primary transition-colors">{item.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-8 text-on-surface-variant font-medium">{item.soil_type || '---'}</td>
-                    <td className="px-4 py-8">
-                      <div className="flex flex-col">
-                        <span className="text-on-surface font-black text-sm">{item.ph_min} - {item.ph_max}</span>
-                        <span className="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-tighter">Skala pH</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-8">
-                      <div className="flex flex-col">
-                        <span className="text-on-surface font-black text-sm">{item.rainfall_min} - {item.rainfall_max}</span>
-                        <span className="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-tighter">mm / Tahun</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-8">
-                      <div className="flex flex-col">
-                        <span className="text-on-surface font-black text-sm">{item.temp_min} - {item.temp_max}°C</span>
-                        <span className="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-tighter">Celcius</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-8">
-                      <span className="px-3 py-1.5 bg-surface-container text-on-surface rounded-lg text-xs font-bold border border-outline-variant/10">
-                        {item.district?.name || '---'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-8">
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm transition-all group-hover:scale-105 ${
-                        item.status === 'Unggulan' 
-                          ? 'bg-primary-fixed text-on-primary-fixed-variant border border-primary/10' 
-                          : 'bg-surface-container-highest text-on-surface-variant border border-outline-variant/10'
-                      }`}>
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-8 py-8 text-right">
-                      <div className="flex justify-end gap-1">
-                        <button 
-                          onClick={() => handleEdit(item)}
-                          className="material-symbols-outlined p-2.5 text-on-surface-variant hover:bg-primary-fixed hover:text-on-primary-fixed-variant rounded-xl transition-all"
-                        >
-                          edit
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(item.id)}
-                          className="material-symbols-outlined p-2.5 text-on-surface-variant hover:bg-error/10 hover:text-error rounded-xl transition-all"
-                        >
-                          delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {loading && (
-                  <tr>
-                    <td className="px-8 py-20 text-center" colSpan={8}>
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                        <span className="text-on-surface-variant font-black uppercase tracking-[0.2em] text-[10px]">Sinkronisasi Database...</span>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-                {!loading && filteredCommodities.length === 0 && (
-                  <tr>
-                    <td className="px-8 py-20 text-center" colSpan={8}>
-                      <div className="flex flex-col items-center gap-2 opacity-30">
-                        <span className="material-symbols-outlined text-6xl">inventory_2</span>
-                        <span className="text-on-surface-variant font-bold">Data tidak ditemukan dalam arsip.</span>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      </td>
+                      <td className="px-6 py-6">
+                        <div className="flex items-center gap-6">
+                            <div className="space-y-1">
+                                <span className="block text-[8px] font-black text-on-surface-variant/40 uppercase tracking-widest">pH Tanah</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined text-[10px] text-primary">circle</span>
+                                    <span className="text-sm font-black tracking-tighter">{item.ph_min}-{item.ph_max}</span>
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="block text-[8px] font-black text-on-surface-variant/40 uppercase tracking-widest">Hujan</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined text-[10px] text-blue-500">water_drop</span>
+                                    <span className="text-sm font-black tracking-tighter">{item.rainfall_min} <span className="text-[9px] opacity-40 uppercase">mm</span></span>
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="block text-[8px] font-black text-on-surface-variant/40 uppercase tracking-widest">Suhu</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined text-[10px] text-orange-500">thermostat</span>
+                                    <span className="text-sm font-black tracking-tighter">{item.temp_min}-{item.temp_max}°C</span>
+                                </div>
+                            </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-container rounded-full border border-outline-variant/10">
+                          <span className="material-symbols-outlined text-xs text-primary/60">location_on</span>
+                          <span className="text-[11px] font-black tracking-tight">{item.district?.name || '---'}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 text-center">
+                        <span className={`inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.1em] shadow-sm ${
+                          item.status === 'Unggulan' 
+                            ? 'bg-primary text-on-primary' 
+                            : 'bg-surface-container-highest text-on-surface-variant border border-outline-variant/10'
+                        }`}>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300">
+                          <button 
+                            onClick={() => handleEdit(item)}
+                            className="w-10 h-10 flex items-center justify-center bg-primary/10 text-primary hover:bg-primary hover:text-on-primary rounded-xl transition-all duration-300 shadow-sm"
+                            title="Edit Data"
+                          >
+                            <span className="material-symbols-outlined text-lg">edit_note</span>
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(item.id)}
+                            className="w-10 h-10 flex items-center justify-center bg-error/10 text-error hover:bg-error hover:text-white rounded-xl transition-all duration-300 shadow-sm"
+                            title="Hapus Data"
+                          >
+                            <span className="material-symbols-outlined text-lg">delete_sweep</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* States */}
+          {loading && (
+            <div className="mt-8 py-32 text-center bg-surface-container-lowest/50 backdrop-blur rounded-[2.5rem] border border-outline-variant/10 shadow-sm overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-1 bg-surface-container-high">
+                    <div className="h-full bg-primary animate-progress origin-left w-1/3" />
+                </div>
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-[3px] border-primary/10 border-t-primary rounded-full animate-spin"></div>
+                    <div className="space-y-1">
+                        <p className="text-on-surface font-black text-sm uppercase tracking-[0.3em]">Singkronisasi Database</p>
+                        <p className="text-on-surface-variant text-[10px] font-medium opacity-50">Mengunduh metadata komoditas terbaru...</p>
+                    </div>
+                </div>
+            </div>
+          )}
+          {!loading && filteredCommodities.length === 0 && (
+            <div className="mt-8 py-32 text-center bg-surface-container-lowest rounded-[2.5rem] border border-dashed border-outline-variant/30 flex flex-col items-center justify-center gap-6">
+                <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center relative">
+                    <span className="material-symbols-outlined text-4xl text-on-surface-variant/20">search_off</span>
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-error/10 rounded-full flex items-center justify-center">
+                        <span className="material-symbols-outlined text-sm text-error">close</span>
+                    </div>
+                </div>
+                <div className="space-y-1">
+                    <h3 className="text-on-surface font-black text-lg">Pencarian Tidak Ditemukan</h3>
+                    <p className="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest opacity-40 max-w-[240px]">
+                        Coba gunakan kata kunci lain atau bersihkan filter pencarian Anda.
+                    </p>
+                </div>
+                <Button onClick={() => setSearchQuery('')} variant="outline" className="rounded-full px-8 text-[10px] font-black uppercase tracking-widest border-outline-variant/50">
+                    Atur Ulang
+                </Button>
+            </div>
+          )}
+
           {/* Pagination */}
-          <div className="px-8 py-6 flex items-center justify-between border-t border-outline-variant/5 bg-surface-container-low/20">
-            <span className="text-[10px] text-on-surface-variant font-black uppercase tracking-wider">Menampilkan {filteredCommodities.length} dari {commodities.length} entri</span>
-            <div className="flex gap-2">
-              <button className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-all">
-                <span className="material-symbols-outlined">chevron_left</span>
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white font-black shadow-lg shadow-primary/20">1</button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-all">
-                <span className="material-symbols-outlined">chevron_right</span>
-              </button>
+          {!loading && filteredCommodities.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 pt-10">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant border border-outline-variant/5">
+                        <span className="text-xs font-black">{filteredCommodities.length}</span>
+                    </div>
+                    <span className="text-[10px] text-on-surface-variant font-black uppercase tracking-widest opacity-50">Dataset Ditampilkan</span>
+                </div>
+                <div className="flex items-center gap-1.5 p-1.5 bg-surface-container-low rounded-2xl border border-outline-variant/10 shadow-sm">
+                    <button className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-all group active:scale-90">
+                        <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">chevron_left</span>
+                    </button>
+                    {[1].map(p => (
+                        <button key={p} className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-on-primary font-black text-xs shadow-lg shadow-primary/20 transition-all active:scale-95">
+                            {p}
+                        </button>
+                    ))}
+                    <button className="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-all group active:scale-90">
+                        <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">chevron_right</span>
+                    </button>
+                </div>
             </div>
-          </div>
+          )}
         </section>
 
-        {/* Recommendation Card */}
-        <section className="bg-surface-container-low p-1 rounded-[32px] border border-outline-variant/5 shadow-2xl shadow-on-surface/5">
-          <div className="bg-surface-container-lowest p-10 rounded-[30px] border border-outline-variant/10 relative overflow-hidden group">
-            <div className="flex items-center gap-4 mb-8">
-              <span className="text-[11px] font-black text-primary tracking-[0.3em] uppercase font-headline bg-primary-fixed/30 px-4 py-2 rounded-full">Protokol Keamanan Data</span>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-outline-variant/30 to-transparent"></div>
-            </div>
-            <div className="flex flex-col md:flex-row gap-12 items-start relative z-10">
-              <div className="flex-1 space-y-6">
-                <h4 className="text-3xl font-black font-headline text-on-surface tracking-tight leading-tight">Integritas Repositori Digital</h4>
-                <p className="text-xl text-on-surface-variant/80 leading-relaxed font-medium">
-                  Setiap perubahan data direkam secara otomatis dalam audit log sistem. Pastikan parameter tanah dan iklim telah melalui validasi lapangan oleh tim penyuluh pertanian daerah sebelum disimpan secara permanen dalam dataset pusat.
-                </p>
-                <div className="flex gap-4">
-                  <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-4 py-2 rounded-lg">
-                    <span className="material-symbols-outlined text-sm">verified_user</span>
-                    Verified System
-                  </div>
-                  <div className="flex items-center gap-2 text-[10px] font-black text-tertiary uppercase tracking-widest bg-tertiary/5 px-4 py-2 rounded-lg">
-                    <span className="material-symbols-outlined text-sm">history</span>
-                    Audit Log Active
-                  </div>
+        {/* Simplified Footer Info */}
+        <div className="pt-12 pb-10 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3 group">
+                <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm">
+                    <span className="material-symbols-outlined text-sm">verified</span>
                 </div>
-              </div>
-              <div className="w-full md:w-80 bg-surface-container-low p-8 rounded-3xl space-y-6 shadow-inner border border-outline-variant/5">
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Kapasitas Penyimpanan</span>
-                  <span className="text-xs font-black text-primary">8.4 / 10 GB</span>
+                <div className="space-y-0.5">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-on-surface">Data Terverifikasi</span>
+                    <span className="block text-[8px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40">Integritas Metadata 100%</span>
                 </div>
-                <div className="w-full h-4 bg-surface-container-highest rounded-full overflow-hidden p-1 shadow-inner">
-                  <div className="h-full bg-gradient-to-r from-primary to-primary-container w-[84%] rounded-full shadow-lg transition-all duration-1000"></div>
-                </div>
-                <p className="text-[11px] text-on-surface-variant/60 font-medium leading-relaxed italic">Optimalisasi dataset dilakukan setiap periode akhir panen untuk menjaga performa model prediksi varietas.</p>
-              </div>
             </div>
-            {/* Organic Pattern Overlay */}
-            <div className="absolute top-0 right-0 opacity-[0.03] pointer-events-none -mr-24 -mt-24 group-hover:opacity-10 transition-opacity duration-700">
-              <span className="material-symbols-outlined text-[480px]">eco</span>
+            <div className="flex items-center gap-4">
+                <div className="h-4 w-[1px] bg-outline-variant/20 hidden md:block" />
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-on-surface-variant opacity-40">Dataset Pertanian © 2024 Aceh Utara</p>
             </div>
-          </div>
-        </section>
+        </div>
       </div>
-
-      {/* Institutional Footer */}
-      <footer className="mt-24 py-12 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-8 opacity-60">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-surface-container-highest rounded-xl flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary">agriculture</span>
-          </div>
-          <span className="font-headline font-black text-xs uppercase tracking-[0.2em] text-on-surface max-w-[200px] leading-relaxed">Dinas Pertanian dan Tanaman Pangan Kabupaten Aceh Utara</span>
-        </div>
-        <div className="flex flex-col items-center md:items-end gap-2">
-          <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Sistem Manajemen Pertanian © 2024</p>
-          <div className="flex gap-4">
-            <span className="text-[10px] font-black text-primary/50 uppercase tracking-widest">Privacy Policy</span>
-            <span className="text-[10px] font-black text-primary/50 uppercase tracking-widest">Terms of Service</span>
-          </div>
-        </div>
-      </footer>
 
       <CommodityDialog 
         open={dialogOpen}
@@ -394,4 +495,5 @@ export default function DataManagementPage() {
       />
     </AppLayout>
   );
+
 }
