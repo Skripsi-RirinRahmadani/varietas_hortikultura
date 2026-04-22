@@ -72,62 +72,79 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-4 space-y-6 bg-[#eeeeea] dark:bg-stone-950 z-40 pt-20">
-        <div className="px-2">
-          <h2 className="font-headline font-extrabold text-green-900 dark:text-green-50 text-xl tracking-tight">Dinas Pertanian</h2>
-          <p className="text-xs text-on-surface-variant font-medium opacity-70">Aceh Utara</p>
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-5 space-y-8 bg-[#fdfdfb] dark:bg-stone-950 z-40 pt-20 border-r border-stone-200/50 dark:border-stone-800/50 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]">
+        <div className="px-3 py-2 flex items-center gap-3 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100/50 dark:border-green-800/20">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/20">
+            <span className="material-symbols-outlined text-white text-2xl">agriculture</span>
+          </div>
+          <div className="flex flex-col">
+            <h2 className="font-headline font-black text-green-950 dark:text-green-50 text-base leading-tight tracking-tight uppercase">Dinas Pertanian</h2>
+            <p className="text-[10px] text-green-700/70 dark:text-green-400/50 font-bold tracking-widest uppercase">Aceh Utara</p>
+          </div>
         </div>
-        <nav className="flex-1 space-y-1 pt-4">
+
+        <nav className="flex-1 space-y-1.5">
+          <div className="px-3 mb-2">
+            <span className="text-[10px] font-black text-stone-400 dark:text-stone-500 uppercase tracking-[0.2em]">Menu Utama</span>
+          </div>
           {navItems.map((item) => (
             <Link 
               key={item.href}
               href={item.href} 
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:translate-x-1 ${
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group ${
                 isActive(item.href) 
-                  ? 'bg-white dark:bg-stone-900 text-green-900 dark:text-green-400 font-bold shadow-sm' 
-                  : 'text-stone-600 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300'
+                  ? 'bg-green-600 text-white shadow-xl shadow-green-600/20 font-bold scale-[1.02]' 
+                  : 'text-stone-600 dark:text-stone-400 hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-800 dark:hover:text-green-300'
               }`}
             >
               <span 
-                className="material-symbols-outlined" 
+                className={`material-symbols-outlined transition-all duration-300 ${isActive(item.href) ? 'text-white' : 'group-hover:scale-110'}`} 
                 style={{ fontVariationSettings: isActive(item.href) ? "'FILL' 1" : "'FILL' 0" }}
               >
                 {item.icon}
               </span>
-              <span className="font-body text-sm tracking-wide">{item.label}</span>
+              <span className="font-body text-[14px] tracking-wide">{item.label}</span>
+              {isActive(item.href) && (
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"></div>
+              )}
             </Link>
           ))}
 
           {/* Dropdown Rekomendasi */}
-          <div className="space-y-1">
+          <div className="pt-2">
+            <div className="px-3 mb-2">
+              <span className="text-[10px] font-black text-stone-400 dark:text-stone-500 uppercase tracking-[0.2em]">Data Intel</span>
+            </div>
             <button 
               onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${
+              className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 group ${
                 isActive('/dashboard/results') || isHistoryOpen
-                  ? 'bg-white dark:bg-stone-900 text-green-900 dark:text-green-400 font-bold shadow-sm' 
-                  : 'text-stone-600 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300'
+                  ? 'bg-stone-100 dark:bg-stone-900 text-green-900 dark:text-green-400 font-bold' 
+                  : 'text-stone-600 dark:text-stone-400 hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-800 dark:hover:text-green-300'
               }`}
             >
               <div className="flex items-center gap-3">
                 <span 
-                  className="material-symbols-outlined" 
+                  className={`material-symbols-outlined transition-colors duration-300 ${isActive('/dashboard/results') ? 'text-green-600' : ''}`}
                   style={{ fontVariationSettings: isActive('/dashboard/results') ? "'FILL' 1" : "'FILL' 0" }}
                 >
                   psychology
                 </span>
-                <span className="font-body text-sm tracking-wide">Rekomendasi</span>
+                <span className="font-body text-[14px] tracking-wide">Rekomendasi</span>
               </div>
-              <span className={`material-symbols-outlined text-sm transition-transform duration-200 ${isHistoryOpen ? 'rotate-180' : ''}`}>
+              <span className={`material-symbols-outlined text-sm transition-transform duration-300 ${isHistoryOpen ? 'rotate-180' : ''}`}>
                 expand_more
               </span>
             </button>
 
             {isHistoryOpen && (
-              <div className="ml-9 flex flex-col gap-1 pr-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="mt-1 ml-4 border-l-2 border-stone-200 dark:border-stone-800 flex flex-col gap-1 pl-4 animate-in fade-in slide-in-from-left-2 duration-300">
                 <Link 
                   href="/dashboard/results"
-                  className={`text-xs p-2 rounded-md hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors ${
-                    isActive('/dashboard/results') && !pathname.includes('id=') ? 'text-green-800 font-bold' : 'text-stone-500'
+                  className={`text-xs p-2 rounded-xl transition-all ${
+                    isActive('/dashboard/results') && !pathname.includes('id=') 
+                    ? 'text-green-700 bg-green-50 dark:bg-green-900/20 font-bold' 
+                    : 'text-stone-500 hover:text-green-600 hover:bg-stone-50 dark:hover:bg-stone-900/50'
                   }`}
                 >
                   Lihat Semua
@@ -137,14 +154,22 @@ export default function Sidebar() {
                     <Link 
                       key={item.id}
                       href={`/dashboard/results?id=${item.id}`}
-                      className={`text-[11px] p-2 border-l-2 border-transparent hover:border-green-600 hover:bg-stone-200 dark:hover:bg-stone-800 transition-all flex flex-col ${
-                        pathname.includes(item.id) ? 'border-green-600 bg-stone-200 dark:bg-stone-800 text-green-800 font-bold' : 'text-stone-500'
+                      className={`group p-2.5 rounded-xl transition-all flex flex-col gap-0.5 ${
+                        pathname.includes(item.id) 
+                        ? 'bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30' 
+                        : 'hover:bg-stone-50 dark:hover:bg-stone-900/50'
                       }`}
                     >
-                      <span className="truncate">{item.variety_name}</span>
-                      <span className="text-[9px] opacity-60">
-                        {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • {item.soil_type}
+                      <span className={`text-[12px] truncate ${pathname.includes(item.id) ? 'text-green-800 dark:text-green-400 font-bold' : 'text-stone-600 dark:text-stone-400'}`}>
+                        {item.variety_name}
                       </span>
+                      <div className="flex items-center gap-1.5 opacity-60">
+                        <span className="text-[9px] font-bold uppercase tracking-wider">
+                          {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                        </span>
+                        <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0"></span>
+                        <span className="text-[9px] font-medium truncate uppercase tracking-tighter">{item.soil_type}</span>
+                      </div>
                     </Link>
                   ))
                 ) : (
@@ -154,28 +179,29 @@ export default function Sidebar() {
             )}
           </div>
         </nav>
-        <div className="pt-4">
+
+        <div className="px-2">
           <Link 
             href="/dashboard/predict" 
-            className={`w-full py-3 px-4 rounded-lg bg-gradient-to-br from-[#00450d] to-[#065f18] text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity ${
-              isActive('/dashboard/predict') ? 'ring-2 ring-[#00450d] ring-offset-2' : ''
-            }`}
+            className={`w-full py-4 px-4 rounded-2xl bg-gradient-to-br from-green-900 via-green-800 to-green-950 text-white font-black text-[13px] tracking-[0.05em] shadow-xl shadow-green-900/20 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all relative overflow-hidden group`}
           >
-            <span className="material-symbols-outlined text-lg">add</span>
-            Analisis Baru
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <span className="material-symbols-outlined text-xl">add_circle</span>
+            <span>ANALISIS BARU</span>
           </Link>
         </div>
-        <div className="mt-auto border-t border-stone-200 dark:border-stone-800 pt-4 space-y-1">
-          <button className="w-full flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:text-green-800 dark:hover:text-green-300 text-sm">
-            <span className="material-symbols-outlined text-sm">help</span>
-            Bantuan
+
+        <div className="border-t border-stone-200 dark:border-stone-800 pt-6 mt-4 space-y-1">
+          <button className="w-full flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-400 hover:bg-stone-50 dark:hover:bg-stone-900/50 rounded-xl text-sm transition-all group">
+            <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">help</span>
+            <span className="font-medium">Bantuan & Dukungan</span>
           </button>
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:text-red-800 dark:hover:text-red-400 text-sm transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:text-red-700 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl text-sm transition-all group"
           >
-            <span className="material-symbols-outlined text-sm">logout</span>
-            Keluar
+            <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">logout</span>
+            <span className="font-medium">Keluar Sistem</span>
           </button>
         </div>
       </aside>
