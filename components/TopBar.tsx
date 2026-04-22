@@ -18,6 +18,10 @@ export default function TopBar({ title }: { title?: string }) {
     };
     fetchUser();
 
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
@@ -25,7 +29,10 @@ export default function TopBar({ title }: { title?: string }) {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -114,14 +121,16 @@ export default function TopBar({ title }: { title?: string }) {
                     </div>
                     <span className="text-sm font-medium">Profil Lengkap</span>
                   </Link>
-                  <button 
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400 transition-all group"
+                  <Link 
+                    href="/dashboard/results"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400 transition-all group"
                   >
                     <div className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center group-hover:bg-green-100 dark:group-hover:bg-green-800/30 transition-colors">
                       <span className="material-symbols-outlined text-[18px]" data-icon="history">history</span>
                     </div>
                     <span className="text-sm font-medium">Riwayat Aktivitas</span>
-                  </button>
+                  </Link>
                 </div>
 
                 <div className="my-2 border-t border-stone-100 dark:border-stone-800"></div>
