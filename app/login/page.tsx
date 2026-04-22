@@ -1,7 +1,41 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      // Successful login
+      router.push('/dashboard');
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || 'Terjadi kesalahan saat login.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen grid grid-cols-1 md:grid-cols-12 items-stretch bg-background font-body text-on-surface overflow-hidden">
       {/* Branding Section (Editorial Column) */}
@@ -54,21 +88,31 @@ export default function LoginPage() {
             <h3 className="font-headline font-bold text-3xl text-on-surface tracking-tight mb-2">Portal Akses</h3>
             <p className="text-on-surface-variant font-body">Silahkan masuk untuk mengelola sistem rekomendasi varietas.</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-error-container text-on-error-container rounded-xl text-sm font-medium flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <span className="material-symbols-outlined text-xl" data-icon="error">error</span>
+              {error}
+            </div>
+          )}
           
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleLogin}>
             <div className="space-y-1.5">
-              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="username">Nama Pengguna</label>
+              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="email">Email</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="material-symbols-outlined text-on-surface-variant text-xl group-focus-within:text-primary transition-colors" data-icon="person">person</span>
+                  <span className="material-symbols-outlined text-on-surface-variant text-xl group-focus-within:text-primary transition-colors" data-icon="mail">mail</span>
                 </div>
                 <input 
-                  autoComplete="username" 
+                  autoComplete="email" 
                   className="w-full pl-12 pr-4 py-4 bg-surface-container-highest border-none focus:ring-0 rounded-xl font-body text-on-surface placeholder-on-surface-variant/50 transition-all duration-200" 
-                  id="username" 
-                  name="username" 
-                  placeholder="Masukkan username anda" 
-                  type="text"
+                  id="email" 
+                  name="email" 
+                  placeholder="Masukkan email anda" 
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-primary transition-all duration-300 group-focus-within:w-full"></div>
               </div>
@@ -86,11 +130,20 @@ export default function LoginPage() {
                   id="password" 
                   name="password" 
                   placeholder="••••••••" 
-                  type="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                  <button className="text-on-surface-variant hover:text-primary transition-colors" type="button">
-                    <span className="material-symbols-outlined" data-icon="visibility">visibility</span>
+                  <button 
+                    className="text-on-surface-variant hover:text-primary transition-colors" 
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <span className="material-symbols-outlined" data-icon={showPassword ? "visibility_off" : "visibility"}>
+                      {showPassword ? "visibility_off" : "visibility"}
+                    </span>
                   </button>
                 </div>
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-primary transition-all duration-300 group-focus-within:w-full"></div>
@@ -102,16 +155,35 @@ export default function LoginPage() {
                 <input className="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20 bg-surface" type="checkbox"/>
                 <span className="text-sm font-medium text-on-surface-variant group-hover:text-on-surface transition-colors">Ingat saya</span>
               </label>
-              <a className="text-sm font-semibold text-primary hover:underline underline-offset-4 decoration-2" href="#">Lupa sandi?</a>
+              <Link className="text-sm font-semibold text-primary hover:underline underline-offset-4 decoration-2" href="#">Lupa sandi?</Link>
             </div>
             
-            <Link href="/dashboard" className="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold rounded-xl shadow-lg shadow-primary/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-              <span>Login Ke Sistem</span>
-              <span className="material-symbols-outlined text-xl" data-icon="login">login</span>
-            </Link>
+            <button 
+              disabled={loading}
+              className="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold rounded-xl shadow-lg shadow-primary/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
+              type="submit"
+            >
+              {loading ? (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              ) : (
+                <>
+                  <span>Login Ke Sistem</span>
+                  <span className="material-symbols-outlined text-xl" data-icon="login">login</span>
+                </>
+              )}
+            </button>
           </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-on-surface-variant">
+              Belum punya akun?{' '}
+              <Link href="/register" className="text-primary font-bold hover:underline">
+                Daftar Sekarang
+              </Link>
+            </p>
+          </div>
           
-          <div className="mt-16 flex flex-col items-center gap-6">
+          <div className="mt-12 flex flex-col items-center gap-6">
             <div className="flex items-center gap-4 w-full">
               <div className="h-[1px] flex-grow bg-outline-variant/30"></div>
               <span className="text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant/40">Dikelola Oleh</span>

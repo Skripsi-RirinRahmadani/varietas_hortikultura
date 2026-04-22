@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [history, setHistory] = useState<any[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
@@ -50,6 +51,12 @@ export default function Sidebar() {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
 
   const isActive = (path: string) => pathname === path;
 
@@ -153,10 +160,13 @@ export default function Sidebar() {
             <span className="material-symbols-outlined text-sm">help</span>
             Bantuan
           </button>
-          <Link href="/login" className="w-full flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:text-red-800 dark:hover:text-red-400 text-sm">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-2 text-stone-500 dark:text-stone-400 hover:text-red-800 dark:hover:text-red-400 text-sm transition-colors"
+          >
             <span className="material-symbols-outlined text-sm">logout</span>
             Keluar
-          </Link>
+          </button>
         </div>
       </aside>
 
