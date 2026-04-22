@@ -21,9 +21,13 @@ export default function PredictPage() {
 
   useEffect(() => {
     const fetchLatestHistory = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { data } = await supabase
         .from('predictions')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(2);
       if (data) setHistory(data);
@@ -45,10 +49,18 @@ export default function PredictPage() {
     setIsSubmitting(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Anda harus masuk terlebih dahulu.');
+        router.push('/login');
+        return;
+      }
+
       // Simulation of a basic prediction model logic
       // In a real app, this would be an API call to a ML service
       const isPremium = parseFloat(formData.ph) >= 6 && parseFloat(formData.ph) <= 7 && parseFloat(formData.rainfall) > 2000;
       const prediction = {
+        user_id: user.id,
         soil_type: formData.soil_type,
         ph: parseFloat(formData.ph),
         rainfall: parseFloat(formData.rainfall),

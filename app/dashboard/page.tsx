@@ -29,10 +29,14 @@ export default function DashboardPage() {
         setTotalCommodities(commoditiesCount || 0);
 
         // Fetch total predictions
-        const { count: predictionsCount } = await supabase
-          .from('predictions')
-          .select('*', { count: 'exact', head: true });
-        setTotalPredictions(predictionsCount || 0);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { count: predictionsCount } = await supabase
+            .from('predictions')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id);
+          setTotalPredictions(predictionsCount || 0);
+        }
 
         // Fetch metadata
         const { data: metadata } = await supabase

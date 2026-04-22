@@ -17,11 +17,19 @@ function ResultsContent() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
       if (id) {
         const { data: prediction, error } = await supabase
           .from("predictions")
           .select("*")
           .eq("id", id)
+          .eq("user_id", user.id) // Security layer: ensure user owns the record
           .single();
         
         if (!error && prediction) {
@@ -31,6 +39,7 @@ function ResultsContent() {
         const { data: allHistory, error } = await supabase
           .from("predictions")
           .select("*")
+          .eq("user_id", user.id)
           .order("created_at", { ascending: false });
         
         if (!error && allHistory) {

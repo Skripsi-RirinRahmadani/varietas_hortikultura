@@ -17,10 +17,17 @@ export default function Sidebar() {
   ];
 
   useEffect(() => {
+    let currentUser: any = null;
+
     const fetchHistory = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      currentUser = user;
+
       const { data, error } = await supabase
         .from('predictions')
-        .select('id, created_at, variety_name, soil_type')
+        .select('id, created_at, variety_name, soil_type, user_id')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(5);
       
@@ -42,7 +49,10 @@ export default function Sidebar() {
           table: 'predictions',
         },
         (payload) => {
-          setHistory((prev) => [payload.new, ...prev.slice(0, 4)]);
+          // Only add if it belongs to the current user
+          if (currentUser && payload.new.user_id === currentUser.id) {
+            setHistory((prev) => [payload.new, ...prev.slice(0, 4)]);
+          }
         }
       )
       .subscribe();
