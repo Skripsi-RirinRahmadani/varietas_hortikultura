@@ -41,3 +41,22 @@ export interface Prediction {
   recommendation?: string;
   user_id?: string;
 }
+
+export interface DashboardMetadata {
+  key: string;
+  value: any;
+  updated_at: string;
+}
+
+export interface ModelPerformance {
+  accuracy: number;
+  delay: number;
+  training_data: number;
+  test_data: number;
+}
+
+export interface ProductionStat {
+  name: string;
+  value: number;
+  label: string;
+}
