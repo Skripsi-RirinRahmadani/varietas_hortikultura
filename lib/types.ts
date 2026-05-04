@@ -32,6 +32,9 @@ export interface Prediction {
   rainfall: number;
   temperature: number;
   elevation: number;
+  water_availability?: string;
+  sunlight_duration?: number;
+  identified_location?: string;
   variety_name: string;
   confidence_score: number;
   accuracy?: number;

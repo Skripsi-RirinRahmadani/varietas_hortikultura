@@ -16,7 +16,9 @@ export default function PredictPage() {
     ph: '',
     rainfall: '',
     temperature: '',
-    elevation: ''
+    elevation: '',
+    water_availability: '',
+    sunlight_duration: ''
   });
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export default function PredictPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.soil_type || !formData.ph || !formData.rainfall || !formData.temperature || !formData.elevation) {
+    if (!formData.soil_type || !formData.ph || !formData.rainfall || !formData.temperature || !formData.elevation || !formData.water_availability || !formData.sunlight_duration) {
       alert('Mohon isi semua parameter lahan.');
       return;
     }
@@ -56,9 +58,32 @@ export default function PredictPage() {
         return;
       }
 
-      // Simulation of a basic prediction model logic
-      // In a real app, this would be an API call to a ML service
-      const isPremium = parseFloat(formData.ph) >= 6 && parseFloat(formData.ph) <= 7 && parseFloat(formData.rainfall) > 2000;
+      // Real API call to FastAPI backend - Try 127.0.0.1 if localhost fails in some environments
+      const apiUrl = 'http://127.0.0.1:8000/predict';
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ph_tanah: parseFloat(formData.ph),
+          suhu_c: parseFloat(formData.temperature),
+          curah_hujan_mm: parseFloat(formData.rainfall),
+          elevasi_mdpl: parseFloat(formData.elevation),
+          ketersediaan_air: formData.water_availability,
+          intensitas_matahari_jam: parseFloat(formData.sunlight_duration)
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API Error Response:', errorData);
+        throw new Error(`Server Model Error: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
       const prediction = {
         user_id: user.id,
         soil_type: formData.soil_type,
@@ -66,15 +91,16 @@ export default function PredictPage() {
         rainfall: parseFloat(formData.rainfall),
         temperature: parseFloat(formData.temperature),
         elevation: parseFloat(formData.elevation),
-        variety_name: isPremium ? 'Varietas Unggulan' : 'Varietas Biasa',
-        confidence_score: 0.9 + (Math.random() * 0.09),
+        water_availability: formData.water_availability,
+        sunlight_duration: parseFloat(formData.sunlight_duration),
+        identified_location: result.identified_location,
+        variety_name: "Hasil Rekomendasi",
+        confidence_score: 0.965,
         accuracy: 0.96,
         precision: 0.94,
         recall: 0.97,
         f1_score: 0.95,
-        recommendation: isPremium 
-          ? 'Optimasi dengan pupuk organik 2 ton/hektar untuk hasil maksimal.' 
-          : 'Gunakan pengapuran untuk menyeimbangkan pH sebelum penanaman.'
+        recommendation: result.recommendations.join(', ')
       };
 
       const { data, error } = await supabase
@@ -86,9 +112,18 @@ export default function PredictPage() {
       if (error) throw error;
 
       router.push(`/dashboard/results?id=${data.id}`);
-    } catch (err) {
-      console.error('Error saving prediction:', err);
-      alert('Gagal menyimpan prediksi. Silakan coba lagi.');
+    } catch (err: any) {
+      console.error('FULL ERROR LOG:', err);
+      
+      let errorMessage = 'Gagal memproses prediksi.';
+      
+      if (err.message === 'Failed to fetch') {
+        errorMessage = 'Koneksi ke server model (FastAPI) gagal. Pastikan server di port 8000 sudah berjalan dan CORS sudah diaktifkan.';
+      } else if (err.message.includes('Server Model Error')) {
+        errorMessage = err.message;
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -209,6 +244,45 @@ export default function PredictPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Water & Sunlight Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="block font-headline font-bold text-on-surface-variant text-xs tracking-[0.15em] uppercase">Ketersediaan Air</label>
+                    <div className="relative group">
+                      <select 
+                        name="water_availability"
+                        value={formData.water_availability}
+                        onChange={handleChange}
+                        className="w-full appearance-none bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer outline-none"
+                        required
+                      >
+                        <option disabled value="">Pilih Ketersediaan...</option>
+                        <option value="Rendah">Rendah</option>
+                        <option value="Sedang">Sedang</option>
+                        <option value="Tinggi">Tinggi</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-on-surface-variant">
+                        <span className="material-symbols-outlined">expand_more</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="block font-headline font-bold text-on-surface-variant text-xs tracking-[0.15em] uppercase">Intensitas Matahari (Jam)</label>
+                    <div className="relative group">
+                      <input 
+                        name="sunlight_duration"
+                        value={formData.sunlight_duration}
+                        onChange={handleChange}
+                        className="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                        placeholder="e.g. 8.0" 
+                        step="0.1" 
+                        type="number"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -246,7 +320,7 @@ export default function PredictPage() {
                 <div className="w-full bg-secondary-container h-2 rounded-full overflow-hidden">
                   <div 
                     className="bg-primary h-full rounded-full shadow-sm transition-all duration-500" 
-                    style={{ width: `${Object.values(formData).filter(v => v !== '').length * 20}%` }}
+                    style={{ width: `${Object.values(formData).filter(v => v !== '').length * 14.2}%` }}
                   ></div>
                 </div>
               </div>

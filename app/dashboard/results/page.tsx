@@ -168,7 +168,7 @@ function ResultsContent() {
             Hasil Klasifikasi Varietas
           </h1>
           <p className="font-body text-[#1a1c1a] text-lg opacity-70">
-            Analisis lahan: {data.soil_type} • pH {data.ph} • {data.rainfall} mm/th
+            Analisis lahan: {data.soil_type} • pH {data.ph} • {data.rainfall} mm/th • {data.water_availability} Air
           </p>
         </div>
         <div className="text-right pb-1">
@@ -195,10 +195,10 @@ function ResultsContent() {
                 Hasil Prediksi Akhir
               </span>
               <h2 className="font-headline text-5xl font-extrabold text-[#1a1c1a] mb-3 tracking-tighter">
-                {data.variety_name}
+                {data.identified_location || 'Lokasi Teridentifikasi'}
               </h2>
               <p className="text-[#41493e] leading-relaxed max-w-xl">
-                Berdasarkan parameter analisis tanah, iklim, dan ketinggian {data.elevation}m, sistem mengklasifikasikan benih ini ke dalam kategori <span className="font-bold text-[#00450d]">{data.variety_name.toLowerCase()}</span> untuk wilayah Aceh Utara.
+                Berdasarkan parameter analisis tanah, iklim, dan ketinggian {data.elevation}m, sistem mengidentifikasi profil lahan Anda paling cocok dengan karakteristik wilayah <span className="font-bold text-[#00450d]">{data.identified_location}</span>.
               </p>
             </div>
             <div className="flex-shrink-0">
@@ -310,10 +310,14 @@ function ResultsContent() {
             <div className="bg-white p-8 rounded-xl shadow-sm border border-outline-variant/5">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="max-w-2xl">
-                  <h4 className="font-headline text-2xl font-bold text-[#00450d] mb-4">Langkah Strategis Berikutnya</h4>
-                  <p className="text-[#41493e] leading-relaxed">
-                    {data.recommendation || 'Gunakan parameter spesifik untuk hasil yang lebih akurat.'}
-                  </p>
+                  <h4 className="font-headline text-2xl font-bold text-[#00450d] mb-4">Varietas yang Direkomendasikan</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {data.recommendation?.split(', ').map((rec, index) => (
+                      <span key={index} className="bg-[#00450d]/5 text-[#00450d] px-3 py-1 rounded-lg text-sm font-bold border border-[#00450d]/10">
+                        {rec}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 <button className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-br from-[#00450d] to-[#065f18] text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all active:scale-95 whitespace-nowrap">
                   <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">download</span>
