@@ -14,6 +14,7 @@ export default function Sidebar() {
   const navItems = [
     { href: '/dashboard', label: 'Dasbor', icon: 'dashboard' },
     { href: '/dashboard/data', label: 'Manajemen Data', icon: 'database' },
+    { href: '/dashboard/map', label: 'Peta Sebaran', icon: 'map' },
   ];
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-5 space-y-8 bg-[#fdfdfb] dark:bg-stone-950 z-40 pt-20 border-r border-stone-200/50 dark:border-stone-800/50 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]">
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-5 space-y-8 bg-surface-container-low dark:bg-stone-950 z-40 pt-20 border-r border-stone-200/50 dark:border-stone-800/50 shadow-xl dark:shadow-none">
         <div className="px-3 py-2 flex items-center gap-3 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100/50 dark:border-green-800/20">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/20">
             <span className="material-symbols-outlined text-white text-2xl">agriculture</span>

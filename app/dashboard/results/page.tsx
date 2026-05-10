@@ -70,10 +70,10 @@ function ResultsContent() {
             <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">Arsip Rekomendasi</span>
           </div>
-          <h1 className="font-headline text-4xl lg:text-5xl font-extrabold text-[#00450d] tracking-tight mb-4 leading-tight">
+          <h1 className="font-headline text-4xl lg:text-5xl font-extrabold text-green-900 dark:text-green-400 tracking-tight mb-4 leading-tight">
             Riwayat Analisis Lahan
           </h1>
-          <p className="font-body text-[#1a1c1a] text-lg opacity-70 max-w-2xl">
+          <p className="font-body text-stone-900 dark:text-stone-100 text-lg opacity-70 max-w-2xl">
             Akses kembali seluruh hasil evaluasi dan rekomendasi varietas yang telah dibuat oleh sistem cerdas.
           </p>
         </div>
@@ -84,7 +84,7 @@ function ResultsContent() {
               <Link 
                 key={item.id}
                 href={`/dashboard/results?id=${item.id}`}
-                className="group bg-white rounded-2xl p-6 border border-outline-variant/5 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300"
+                className="group bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/50 dark:border-stone-800/50 shadow-sm hover:shadow-xl hover:shadow-green-500/5 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex justify-between items-start mb-6">
                   <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
@@ -98,12 +98,12 @@ function ResultsContent() {
                   </div>
                 </div>
                 
-                <h3 className="font-headline text-xl font-bold text-[#1a1c1a] mb-2 group-hover:text-primary transition-colors">
+                <h3 className="font-headline text-xl font-bold text-stone-900 dark:text-stone-100 mb-2 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors">
                   {item.variety_name}
                 </h3>
                 
                 <div className="grid grid-cols-2 gap-3 mb-6">
-                  <div className="bg-[#f4f4f0] p-3 rounded-lg">
+                  <div className="bg-stone-50 dark:bg-stone-800 p-3 rounded-lg">
                     <p className="text-[9px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1 opacity-60">Tanah</p>
                     <p className="text-xs font-bold text-on-surface truncate">{item.soil_type}</p>
                   </div>
@@ -164,10 +164,10 @@ function ResultsContent() {
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             Kembali ke Riwayat
           </button>
-          <h1 className="font-headline text-4xl font-extrabold text-[#00450d] tracking-tight mb-2">
+          <h1 className="font-headline text-4xl font-extrabold text-green-900 dark:text-green-400 tracking-tight mb-2">
             Hasil Klasifikasi Varietas
           </h1>
-          <p className="font-body text-[#1a1c1a] text-lg opacity-70">
+          <p className="font-body text-stone-900 dark:text-stone-100 text-lg opacity-70">
             Analisis lahan: {data.soil_type} • pH {data.ph} • {data.rainfall} mm/th • {data.water_availability} Air
           </p>
         </div>
@@ -183,7 +183,7 @@ function ResultsContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Prediction Result Section (Large Card) */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          <div className="bg-white rounded-2xl p-8 border-none shadow-sm flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 border border-stone-200/50 dark:border-stone-800/50 shadow-sm flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#00450d]/5 rounded-full -mr-16 -mt-16"></div>
             <div className="w-32 h-32 rounded-full bg-[#a3f69c]/10 flex items-center justify-center flex-shrink-0">
               <span className="material-symbols-outlined text-6xl text-[#00450d]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -194,10 +194,10 @@ function ResultsContent() {
               <span className="font-label text-xs font-bold uppercase tracking-widest text-[#00450d] mb-2 block">
                 Hasil Prediksi Akhir
               </span>
-              <h2 className="font-headline text-5xl font-extrabold text-[#1a1c1a] mb-3 tracking-tighter">
+              <h2 className="font-headline text-5xl font-extrabold text-stone-900 dark:text-stone-100 mb-3 tracking-tighter">
                 {data.identified_location || 'Lokasi Teridentifikasi'}
               </h2>
-              <p className="text-[#41493e] leading-relaxed max-w-xl">
+              <p className="text-stone-600 dark:text-stone-400 leading-relaxed max-w-xl">
                 Berdasarkan parameter analisis tanah, iklim, dan ketinggian {data.elevation}m, sistem mengidentifikasi profil lahan Anda paling cocok dengan karakteristik wilayah <span className="font-bold text-[#00450d]">{data.identified_location}</span>.
               </p>
             </div>
@@ -212,19 +212,19 @@ function ResultsContent() {
           {/* Evaluation Metrics Scorecard */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Accuracy */}
-            <div className="bg-[#f4f4f0] p-6 rounded-xl border-none">
+            <div className="bg-stone-50 dark:bg-stone-900/50 p-6 rounded-xl border border-stone-200/50 dark:border-stone-800/50">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#41493e] font-label">Akurasi</span>
                 <span className="material-symbols-outlined text-[#00450d] text-sm">verified</span>
               </div>
-              <div className="text-3xl font-black text-[#1a1c1a]">{data.accuracy || '0.96'}</div>
+              <div className="text-3xl font-black text-stone-900 dark:text-stone-100">{data.accuracy || '0.96'}</div>
               <div className="mt-2 h-1.5 w-full bg-[#e8e8e4] rounded-full overflow-hidden">
                 <div className="h-full bg-[#00450d] rounded-full" style={{ width: `${(data.accuracy || 0.96) * 100}%` }}></div>
               </div>
             </div>
 
             {/* Precision */}
-            <div className="bg-[#f4f4f0] p-6 rounded-xl border-none">
+            <div className="bg-stone-50 dark:bg-stone-900/50 p-6 rounded-xl border border-stone-200/50 dark:border-stone-800/50">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#41493e] font-label">Presisi</span>
                 <span className="material-symbols-outlined text-[#00450d] text-sm">ads_click</span>
@@ -236,7 +236,7 @@ function ResultsContent() {
             </div>
 
             {/* Recall */}
-            <div className="bg-[#f4f4f0] p-6 rounded-xl border-none">
+            <div className="bg-stone-50 dark:bg-stone-900/50 p-6 rounded-xl border border-stone-200/50 dark:border-stone-800/50">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#41493e] font-label">Recall</span>
                 <span className="material-symbols-outlined text-[#00450d] text-sm">history</span>
@@ -248,7 +248,7 @@ function ResultsContent() {
             </div>
 
             {/* F1-Score */}
-            <div className="bg-[#f4f4f0] p-6 rounded-xl border-none">
+            <div className="bg-stone-50 dark:bg-stone-900/50 p-6 rounded-xl border border-stone-200/50 dark:border-stone-800/50">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#41493e] font-label">F1-Score</span>
                 <span className="material-symbols-outlined text-[#00450d] text-sm">functions</span>
@@ -263,9 +263,9 @@ function ResultsContent() {
 
         {/* Confusion Matrix Visualization */}
         <div className="lg:col-span-4 flex flex-col gap-6">
-          <div className="bg-white rounded-2xl p-8 border-none shadow-sm h-full font-body">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 border border-stone-200/50 dark:border-stone-800/50 shadow-sm h-full font-body">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-headline font-bold text-lg text-[#1a1c1a]">Matriks Kebingungan</h3>
+              <h3 className="font-headline font-bold text-lg text-stone-900 dark:text-stone-100">Matriks Kebingungan</h3>
               <span className="material-symbols-outlined text-[#41493e]">info</span>
             </div>
             <div className="grid grid-cols-[auto_1fr_1fr] grid-rows-[auto_1fr_1fr] gap-1 text-sm">
@@ -291,7 +291,7 @@ function ResultsContent() {
                 <span className="text-[10px] font-medium opacity-80 uppercase tracking-tighter leading-none">Negatif Benar</span>
               </div>
             </div>
-            <div className="mt-8 p-4 bg-[#f4f4f0] rounded-lg border border-outline-variant/10">
+            <div className="mt-8 p-4 bg-stone-50 dark:bg-stone-800/50 rounded-lg border border-stone-200/50 dark:border-stone-800/50">
               <p className="text-xs text-[#41493e] leading-relaxed">
                 <span className="font-bold text-[#00450d]">Insight:</span> Model memiliki tingkat kesalahan False Negative yang sangat rendah (8), memastikan benih berkualitas tinggi jarang terabaikan.
               </p>
@@ -301,13 +301,13 @@ function ResultsContent() {
 
         {/* Recommendation Card Section */}
         <div className="lg:col-span-12">
-          <div className="bg-[#faf9f5] p-6 rounded-2xl border border-outline-variant/10">
+          <div className="bg-stone-50 dark:bg-stone-950 p-6 rounded-2xl border border-stone-200/50 dark:border-stone-800/50">
             <div className="flex items-center space-x-2 mb-4">
-              <span className="text-[10px] font-bold font-headline uppercase tracking-widest text-[#1a1c1a] px-3 py-1 bg-[#e2e3df] rounded-full">
+              <span className="text-[10px] font-bold font-headline uppercase tracking-widest text-stone-900 dark:text-stone-100 px-3 py-1 bg-stone-200 dark:bg-stone-800 rounded-full">
                 Rekomendasi Dinas Pertanian
               </span>
             </div>
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-outline-variant/5">
+            <div className="bg-white dark:bg-stone-900 p-8 rounded-xl shadow-sm border border-stone-200/50 dark:border-stone-800/50">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="max-w-2xl">
                   <h4 className="font-headline text-2xl font-bold text-[#00450d] mb-4">Varietas yang Direkomendasikan</h4>

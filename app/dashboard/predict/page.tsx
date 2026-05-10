@@ -143,7 +143,7 @@ export default function PredictPage() {
             <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">Model Interface v2.4</span>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-headline font-extrabold text-primary tracking-tight leading-tight">Formulir Prediksi Pertanian</h1>
+          <h1 className="text-4xl lg:text-5xl font-headline font-extrabold text-green-800 dark:text-green-400 tracking-tight leading-tight">Formulir Prediksi Pertanian</h1>
           <p className="text-on-surface-variant mt-4 max-w-2xl text-lg font-body opacity-80 leading-relaxed">Masukkan parameter lahan dan lingkungan untuk menghasilkan rekomendasi tanaman berbasis data yang dioptimalkan untuk profil geografis Aceh Utara.</p>
         </div>
 
@@ -161,7 +161,7 @@ export default function PredictPage() {
                       name="soil_type"
                       value={formData.soil_type}
                       onChange={handleChange}
-                      className="w-full appearance-none bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer outline-none"
+                      className="w-full appearance-none bg-stone-100 dark:bg-stone-800 border-none rounded-xl px-4 py-4 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all cursor-pointer outline-none"
                     >
                       <option disabled value="">Identifikasi Karakteristik Lahan...</option>
                       <option value="Aluvial">Aluvial</option>
@@ -186,7 +186,7 @@ export default function PredictPage() {
                         name="ph"
                         value={formData.ph}
                         onChange={handleChange}
-                        className="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                        className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl px-4 py-4 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all outline-none" 
                         max="14" 
                         min="1" 
                         placeholder="e.g. 6.5" 
@@ -203,7 +203,7 @@ export default function PredictPage() {
                         name="rainfall"
                         value={formData.rainfall}
                         onChange={handleChange}
-                        className="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                        className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl px-4 py-4 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all outline-none" 
                         placeholder="e.g. 2100" 
                         type="number"
                         required
@@ -221,7 +221,7 @@ export default function PredictPage() {
                         name="temperature"
                         value={formData.temperature}
                         onChange={handleChange}
-                        className="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                        className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl px-4 py-4 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all outline-none" 
                         placeholder="e.g. 28.5" 
                         step="0.5" 
                         type="number"
@@ -236,7 +236,7 @@ export default function PredictPage() {
                         name="elevation"
                         value={formData.elevation}
                         onChange={handleChange}
-                        className="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                        className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl px-4 py-4 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all outline-none" 
                         placeholder="e.g. 150" 
                         type="number"
                         required
@@ -254,7 +254,7 @@ export default function PredictPage() {
                         name="water_availability"
                         value={formData.water_availability}
                         onChange={handleChange}
-                        className="w-full appearance-none bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer outline-none"
+                        className="w-full appearance-none bg-stone-100 dark:bg-stone-800 border-none rounded-xl px-4 py-4 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all cursor-pointer outline-none"
                         required
                       >
                         <option disabled value="">Pilih Ketersediaan...</option>
@@ -274,7 +274,7 @@ export default function PredictPage() {
                         name="sunlight_duration"
                         value={formData.sunlight_duration}
                         onChange={handleChange}
-                        className="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 text-on-surface font-body font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                        className="w-full bg-stone-100 dark:bg-stone-800 border-none rounded-xl px-4 py-4 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all outline-none" 
                         placeholder="e.g. 8.0" 
                         step="0.1" 
                         type="number"
@@ -310,7 +310,7 @@ export default function PredictPage() {
               <p className="text-xs leading-relaxed text-on-surface-variant font-body font-medium opacity-80">
                 Pastikan seluruh pengukuran diambil dari hasil uji tanah terbaru. Parameter yang tidak akurat dapat menyebabkan pemilihan tanaman yang tidak optimal dan pemborosan sumber daya di lapangan.
               </p>
-              <div className="bg-white/40 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+              <div className="bg-white/40 dark:bg-black/40 backdrop-blur-sm p-4 rounded-xl border border-white/20 dark:border-white/5">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Analitik Formulir</span>
                   <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full">

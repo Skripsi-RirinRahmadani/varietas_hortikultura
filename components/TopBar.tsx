@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function TopBar({ title }: { title?: string }) {
   const router = useRouter();
@@ -70,6 +71,7 @@ export default function TopBar({ title }: { title?: string }) {
             <button className="p-2 text-stone-600 dark:text-stone-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all rounded-lg active:scale-95">
               <span className="material-symbols-outlined text-[22px]" data-icon="settings_suggest">settings_suggest</span>
             </button>
+            <ThemeToggle />
           </div>
 
           <div className="h-8 w-[1px] bg-stone-200 dark:bg-stone-800 mx-1 hidden sm:block"></div>
