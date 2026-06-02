@@ -6,6 +6,45 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Prediction } from '@/lib/types';
 
+const fallbackKecamatanList = [
+  "Baktiya", "Baktiya Barat", "Banda Baro", "Cot Girek", "Dewantara", 
+  "Geureudong Pase", "Kuta Makmur", "Langkahan", "Lapang", "Lhoksukon", 
+  "Matangkuli", "Meurah Mulia", "Muara Batu", "Nibong", "Nisam", 
+  "Nisam Antara", "Paya Bakong", "Pirak Timu", "Samudera", "Sawang", 
+  "Seunuddon", "Simpang Keramat", "Syamtalira Aron", "Syamtalira Bayu", 
+  "Tanah Jambo Aye", "Tanah Luas", "Tanah Pasir"
+];
+
+const kecamatanEnvMap: Record<string, { ph: string, temperature: string, rainfall: string, elevation: string }> = {
+  "Sawang": { ph: '5.42', temperature: '25.0', rainfall: '2200', elevation: '381' },
+  "Nisam": { ph: '5.60', temperature: '26.5', rainfall: '1947', elevation: '31' },
+  "Nisam Antara": { ph: '5.47', temperature: '25.2', rainfall: '2181', elevation: '459' },
+  "Banda Baro": { ph: '5.62', temperature: '26.4', rainfall: '1986', elevation: '35' },
+  "Kuta Makmur": { ph: '5.67', temperature: '26.3', rainfall: '2061', elevation: '141' },
+  "Simpang Keramat": { ph: '5.59', temperature: '26.1', rainfall: '2152', elevation: '165' },
+  "Syamtalira Bayu": { ph: '5.59', temperature: '26.4', rainfall: '1951', elevation: '20' },
+  "Geureudong Pase": { ph: '5.40', temperature: '24.2', rainfall: '2267', elevation: '477' },
+  "Meurah Mulia": { ph: '5.54', temperature: '26.6', rainfall: '2084', elevation: '18' },
+  "Matangkuli": { ph: '5.45', temperature: '26.7', rainfall: '2130', elevation: '12' },
+  "Paya Bakong": { ph: '5.29', temperature: '25.7', rainfall: '2263', elevation: '81' },
+  "Pirak Timu": { ph: '5.15', temperature: '26.3', rainfall: '2111', elevation: '13' },
+  "Cot Girek": { ph: '5.17', temperature: '25.6', rainfall: '2404', elevation: '124' },
+  "Tanah Jambo Aye": { ph: '5.31', temperature: '27.0', rainfall: '2144', elevation: '10' },
+  "Langkahan": { ph: '5.10', temperature: '25.8', rainfall: '2429', elevation: '71' },
+  "Seunuddon": { ph: '6.09', temperature: '27.2', rainfall: '2056', elevation: '4' },
+  "Baktiya": { ph: '5.37', temperature: '27.0', rainfall: '2091', elevation: '11' },
+  "Baktiya Barat": { ph: '5.77', temperature: '27.1', rainfall: '2006', elevation: '4' },
+  "Lhoksukon": { ph: '5.22', temperature: '26.9', rainfall: '2091', elevation: '12' },
+  "Tanah Luas": { ph: '5.49', temperature: '25.2', rainfall: '2200', elevation: '239' },
+  "Nibong": { ph: '5.51', temperature: '26.7', rainfall: '2127', elevation: '17' },
+  "Samudera": { ph: '5.70', temperature: '26.7', rainfall: '1999', elevation: '7' },
+  "Syamtalira Aron": { ph: '5.64', temperature: '26.7', rainfall: '2000', elevation: '5' },
+  "Tanah Pasir": { ph: '5.90', temperature: '26.8', rainfall: '1979', elevation: '5' },
+  "Lapang": { ph: '6.05', temperature: '27.1', rainfall: '2022', elevation: '4' },
+  "Muara Batu": { ph: '5.71', temperature: '26.9', rainfall: '1941', elevation: '10' },
+  "Dewantara": { ph: '5.72', temperature: '26.8', rainfall: '1932', elevation: '9' }
+};
+
 export default function PredictPage() {
   const router = useRouter();
   
@@ -14,11 +53,12 @@ export default function PredictPage() {
     ph: '6.50',
     temperature: '27.0',
     rainfall: '2000',
-    elevation: '150',
-    water_availability: 'Sedang',
-    sunlight_duration: '7.0'
+    elevation: '150'
   });
 
+  const [inputMode, setInputMode] = useState<'params' | 'kecamatan'>('params');
+  const [selectedKecamatan, setSelectedKecamatan] = useState<string>('');
+  const [kecamatanList, setKecamatanList] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [isApiOnline, setIsApiOnline] = useState<'checking' | 'online' | 'offline'>('checking');
@@ -52,7 +92,26 @@ export default function PredictPage() {
       if (data) setHistory(data);
     };
 
+    const fetchKecamatanList = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/kecamatan").catch(() => 
+          fetch("http://localhost:8000/kecamatan")
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === "success" && data.kecamatan) {
+            setKecamatanList(data.kecamatan);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Gagal mengambil list kecamatan dari API");
+      }
+      setKecamatanList(fallbackKecamatanList);
+    };
+
     fetchLatestHistory();
+    fetchKecamatanList();
     checkApiStatus();
 
     // Check API status periodically every 10 seconds
@@ -119,6 +178,7 @@ export default function PredictPage() {
         rainfall: parseFloat(formData.rainfall),
         temperature: parseFloat(formData.temperature),
         elevation: elevationVal,
+        identified_location: kecamatan,
         variety_name: recommendations.length > 0 ? recommendations[0].tanaman : "Hasil Rekomendasi",
         confidence_score: parseFloat(confidence) / 100 || 0.965,
         accuracy: 0.96,
@@ -155,9 +215,7 @@ export default function PredictPage() {
       ph_tanah: parseFloat(formData.ph),
       suhu_c: parseFloat(formData.temperature),
       curah_hujan_mm: parseFloat(formData.rainfall),
-      elevasi_mdpl: parseFloat(formData.elevation),
-      ketersediaan_air: formData.water_availability,
-      intensitas_matahari_jam: parseFloat(formData.sunlight_duration)
+      elevasi_mdpl: parseFloat(formData.elevation)
     };
 
     if (isApiOnline === 'online') {
@@ -215,9 +273,7 @@ export default function PredictPage() {
       ph_tanah: parseFloat(formData.ph),
       suhu_c: parseFloat(formData.temperature),
       curah_hujan_mm: parseFloat(formData.rainfall),
-      elevasi_mdpl: parseFloat(formData.elevation),
-      ketersediaan_air: formData.water_availability,
-      intensitas_matahari_jam: parseFloat(formData.sunlight_duration)
+      elevasi_mdpl: parseFloat(formData.elevation)
     };
 
     runSimulationFallback(payload);
@@ -230,9 +286,7 @@ export default function PredictPage() {
       ph: item.ph.toFixed(2),
       temperature: item.temperature.toFixed(1),
       rainfall: item.rainfall.toFixed(0),
-      elevation: item.elevation.toFixed(0),
-      water_availability: item.water_availability || 'Sedang',
-      sunlight_duration: item.sunlight_duration ? item.sunlight_duration.toFixed(1) : '7.0'
+      elevation: item.elevation.toFixed(0)
     };
 
     setFormData(loadedData);
@@ -245,14 +299,88 @@ export default function PredictPage() {
       ph_tanah: item.ph,
       suhu_c: item.temperature,
       curah_hujan_mm: item.rainfall,
-      elevasi_mdpl: item.elevation,
-      ketersediaan_air: item.water_availability || 'Sedang',
-      intensitas_matahari_jam: item.sunlight_duration || 7.0
+      elevasi_mdpl: item.elevation
     };
 
     setTimeout(() => {
       runSimulationFallback(payload);
     }, 100);
+  };
+
+  const handleKecamatanRecommendSubmit = async () => {
+    if (!selectedKecamatan) return;
+    setIsSubmitting(true);
+    setAnimateProgress(false);
+
+    await new Promise(r => setTimeout(r, 600));
+
+    const env = kecamatanEnvMap[selectedKecamatan];
+    if (env) {
+      setFormData({
+        ph: env.ph,
+        temperature: env.temperature,
+        rainfall: env.rainfall,
+        elevation: env.elevation
+      });
+    }
+
+    if (isApiOnline === 'online') {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/kecamatan/${selectedKecamatan}/recommend`).catch(() => 
+          fetch(`http://localhost:8000/kecamatan/${selectedKecamatan}/recommend`)
+        );
+
+        if (!response.ok) throw new Error("Gagal memanggil API");
+
+        const data = await response.json();
+        
+        if (data.status === "success") {
+          setPredictionResult({
+            identified_location: data.identified_location,
+            location_confidence: data.location_confidence,
+            recommendations: data.recommendations
+          });
+          setShowOfflineAlert(false);
+
+          if (data.environmental_parameters) {
+            setFormData({
+              ph: data.environmental_parameters.ph.toFixed(2),
+              temperature: data.environmental_parameters.temperature.toFixed(1),
+              rainfall: data.environmental_parameters.rainfall.toFixed(0),
+              elevation: data.environmental_parameters.elevation.toFixed(0)
+            });
+          }
+
+          await savePredictionToSupabase(data.identified_location, data.location_confidence, data.recommendations);
+          
+          setTimeout(() => setAnimateProgress(true), 100);
+        } else {
+          throw new Error("Gagal memproses");
+        }
+      } catch (err) {
+        console.warn("Koneksi API gagal, menggunakan simulasi lokal:", err);
+        runKecamatanSimulationFallback(selectedKecamatan);
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      runKecamatanSimulationFallback(selectedKecamatan);
+      setIsSubmitting(false);
+    }
+  };
+
+  const runKecamatanSimulationFallback = (kecamatanName: string) => {
+    const env = kecamatanEnvMap[kecamatanName];
+    if (!env) return;
+
+    const payload = {
+      ph_tanah: parseFloat(env.ph),
+      suhu_c: parseFloat(env.temperature),
+      curah_hujan_mm: parseFloat(env.rainfall),
+      elevasi_mdpl: parseFloat(env.elevation)
+    };
+
+    runSimulationFallback(payload);
   };
 
   // Client-Side Fallback Recommendation Logic
@@ -261,8 +389,6 @@ export default function PredictPage() {
     suhu_c: number;
     curah_hujan_mm: number;
     elevasi_mdpl: number;
-    ketersediaan_air: string;
-    intensitas_matahari_jam: number;
   }) => {
     setShowOfflineAlert(true);
 
@@ -440,7 +566,7 @@ export default function PredictPage() {
                 Parameterisasi Lahan Pertanian
               </h1>
               <p className="text-sm text-stone-600 dark:text-stone-400 mt-2 max-w-xl font-body leading-relaxed">
-                Sesuaikan 6 parameter ekologis di bawah untuk mengidentifikasi kecocokan kecamatan di Aceh Utara dan memprediksi varietas tanaman hortikultura terbaik.
+                Sesuaikan 4 parameter ekologis di bawah untuk mengidentifikasi kecocokan kecamatan di Aceh Utara dan memprediksi varietas tanaman hortikultura terbaik.
               </p>
             </div>
 
@@ -468,14 +594,43 @@ export default function PredictPage() {
           {/* Left Column: Form Parameters (5 cols) */}
           <section className="lg:col-span-5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-3 border-b border-stone-200 dark:border-stone-800 pb-4 mb-6">
+              <div className="flex items-center gap-3 border-b border-stone-200 dark:border-stone-800 pb-4 mb-4">
                 <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">sliders</span>
                 <h2 className="font-headline font-extrabold text-lg text-stone-900 dark:text-stone-100">
                   Parameter Lingkungan
                 </h2>
               </div>
 
-              <form onSubmit={handlePredictSubmit} className="space-y-6">
+              {/* Mode Selector Toggle */}
+              <div className="flex bg-stone-100 dark:bg-stone-800/80 p-1.5 rounded-2xl mb-6 border border-stone-200/30 dark:border-stone-700/30 shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => setInputMode('params')}
+                  className={`flex-1 py-2 px-3 rounded-xl font-headline font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                    inputMode === 'params'
+                      ? 'bg-white dark:bg-stone-900 text-green-700 dark:text-green-400 shadow-sm'
+                      : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
+                  }`}
+                >
+                  <i className="fa-solid fa-sliders"></i>
+                  Mode Parameter
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInputMode('kecamatan')}
+                  className={`flex-1 py-2 px-3 rounded-xl font-headline font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                    inputMode === 'kecamatan'
+                      ? 'bg-white dark:bg-stone-900 text-green-700 dark:text-green-400 shadow-sm'
+                      : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
+                  }`}
+                >
+                  <i className="fa-solid fa-map-location-dot"></i>
+                  Mode Kecamatan
+                </button>
+              </div>
+
+              {inputMode === 'params' ? (
+                <form onSubmit={handlePredictSubmit} className="space-y-6">
                 
                 {/* pH Tanah Range */}
                 <div className="space-y-2">
@@ -565,50 +720,6 @@ export default function PredictPage() {
                   />
                 </div>
 
-                {/* Ketersediaan Air Dropdown */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-stone-600 dark:text-stone-400 flex items-center gap-1.5">
-                    <i className="fa-solid fa-droplet text-cyan-500 w-4"></i> Ketersediaan Air
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="water_availability"
-                      value={formData.water_availability}
-                      onChange={handleChange}
-                      className="w-full bg-stone-100 dark:bg-stone-800 border border-transparent dark:border-stone-800 rounded-2xl px-4 py-3.5 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all cursor-pointer outline-none appearance-none"
-                    >
-                      <option value="Rendah">Rendah (Tadah Hujan / Minim)</option>
-                      <option value="Sedang">Sedang (Cukup Pengairan)</option>
-                      <option value="Tinggi">Tinggi (Sangat Melimpah / Irigasi Teknis)</option>
-                    </select>
-                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-stone-500">
-                      <span className="material-symbols-outlined">expand_more</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Intensitas Matahari Range */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs font-semibold">
-                    <span className="text-stone-600 dark:text-stone-400 flex items-center gap-1.5">
-                      <i className="fa-solid fa-sun text-yellow-500 w-4"></i> Intensitas Matahari
-                    </span>
-                    <span className="font-headline font-black text-green-700 dark:text-green-400 text-sm">
-                      {parseFloat(formData.sunlight_duration).toFixed(1)} jam
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    name="sunlight_duration"
-                    min="2.0"
-                    max="12.0"
-                    step="0.1"
-                    value={formData.sunlight_duration}
-                    onChange={handleChange}
-                    className="w-full premium-slider h-1.5 bg-stone-150 dark:bg-stone-800 rounded-lg appearance-none outline-none transition-all"
-                  />
-                </div>
-
                 {/* Form Buttons */}
                 <div className="pt-4 space-y-3">
                   <button
@@ -649,7 +760,88 @@ export default function PredictPage() {
                   </button>
                 </div>
 
-              </form>
+                </form>
+              ) : (
+                <div className="space-y-5 py-2">
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-stone-600 dark:text-stone-400 flex items-center gap-1.5">
+                      <i className="fa-solid fa-map-pin text-green-500 w-4"></i> Pilih Kecamatan
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedKecamatan}
+                        onChange={(e) => setSelectedKecamatan(e.target.value)}
+                        className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-2xl px-4 py-3.5 text-stone-900 dark:text-stone-100 font-body font-medium focus:ring-2 focus:ring-green-500/20 transition-all cursor-pointer outline-none appearance-none"
+                      >
+                        <option value="">-- Pilih Kecamatan di Aceh Utara --</option>
+                        {kecamatanList.map((kec) => (
+                          <option key={kec} value={kec}>
+                            {kec}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-stone-500">
+                        <span className="material-symbols-outlined">expand_more</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selectedKecamatan && (
+                    <div className="bg-stone-50 dark:bg-stone-955 p-4 rounded-2xl border border-stone-150 dark:border-stone-800/80 space-y-3 shadow-inner">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 dark:text-stone-500 flex items-center gap-1.5">
+                        <i className="fa-solid fa-circle-info"></i> Estimasi Parameter Ekologis
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div className="bg-white dark:bg-stone-900 p-2.5 rounded-xl border border-stone-100 dark:border-stone-800 flex flex-col shadow-sm">
+                          <span className="text-stone-400 dark:text-stone-500 text-[10px] font-bold">pH Tanah</span>
+                          <span className="font-headline font-black text-green-700 dark:text-green-400 mt-0.5">
+                            {kecamatanEnvMap[selectedKecamatan]?.ph || '-'}
+                          </span>
+                        </div>
+                        <div className="bg-white dark:bg-stone-900 p-2.5 rounded-xl border border-stone-100 dark:border-stone-800 flex flex-col shadow-sm">
+                          <span className="text-stone-400 dark:text-stone-500 text-[10px] font-bold">Suhu Rata-rata</span>
+                          <span className="font-headline font-black text-orange-600 dark:text-orange-400 mt-0.5">
+                            {kecamatanEnvMap[selectedKecamatan]?.temperature || '-'}°C
+                          </span>
+                        </div>
+                        <div className="bg-white dark:bg-stone-900 p-2.5 rounded-xl border border-stone-100 dark:border-stone-800 flex flex-col shadow-sm">
+                          <span className="text-stone-400 dark:text-stone-500 text-[10px] font-bold">Curah Hujan</span>
+                          <span className="font-headline font-black text-blue-600 dark:text-blue-400 mt-0.5">
+                            {kecamatanEnvMap[selectedKecamatan]?.rainfall || '-'} mm
+                          </span>
+                        </div>
+                        <div className="bg-white dark:bg-stone-900 p-2.5 rounded-xl border border-stone-100 dark:border-stone-800 flex flex-col shadow-sm">
+                          <span className="text-stone-400 dark:text-stone-500 text-[10px] font-bold">Elevasi</span>
+                          <span className="font-headline font-black text-amber-600 dark:text-amber-500 mt-0.5">
+                            {kecamatanEnvMap[selectedKecamatan]?.elevation || '-'} mdpl
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      disabled={isSubmitting || !selectedKecamatan}
+                      onClick={handleKecamatanRecommendSubmit}
+                      className="w-full py-4 rounded-2xl bg-gradient-to-br from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white font-headline font-extrabold text-sm shadow-lg shadow-green-500/20 hover:shadow-green-500/30 flex justify-center items-center gap-2.5 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span>Menganalisis Kecamatan...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-wand-magic-sparkles text-base"></i>
+                          <span>Tampilkan Varietas Unggulan</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* PREDIKSI TERBARU (Prediction History Chips) */}
