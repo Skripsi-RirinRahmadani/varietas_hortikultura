@@ -54,13 +54,16 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const SKELETON_WIDTHS = [80, 120, 96, 64, 110, 88, 72, 104, 60, 92];
+
 function SkeletonRows({ cols }: { cols: number }) {
   return <>
     {Array.from({ length: 5 }).map((_, i) => (
       <tr key={i}>
         {Array.from({ length: cols + 1 }).map((_, j) => (
           <td key={j} className="px-5 py-4">
-            <div className="h-4 rounded-lg bg-muted animate-pulse" style={{ width: `${60 + Math.random() * 80}px` }} />
+            <div className="h-4 rounded-lg bg-muted animate-pulse"
+              style={{ width: `${SKELETON_WIDTHS[(i * 7 + j) % SKELETON_WIDTHS.length]}px` }} />
           </td>
         ))}
       </tr>
