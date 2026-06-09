@@ -144,6 +144,7 @@ export default function Sidebar() {
   const [history, setHistory] = useState<any[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
 
   const isActive = (path: string) => pathname === path;
 
@@ -151,18 +152,57 @@ export default function Sidebar() {
     let currentUser: any = null;
 
     const init = async () => {
-      const { data: { user: u } } = await supabase.auth.getUser();
-      if (!u) return;
-      currentUser = u;
-      setUser(u);
+      try {
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (!u) {
+          setUserRole(null);
+          return;
+        }
+        currentUser = u;
+        setUser(u);
 
-      const { data } = await supabase
-        .from("predictions")
-        .select("id, created_at, variety_name, soil_type, user_id")
-        .eq("user_id", u.id)
-        .order("created_at", { ascending: false })
-        .limit(5);
-      if (data) setHistory(data);
+        // Fetch user role from profiles
+        try {
+          const { data: profileData, error: profileError } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", u.id)
+            .maybeSingle();
+
+          if (profileError) {
+            console.error("Supabase profile fetch error:", profileError);
+            // Default to user on error
+            setUserRole('user');
+          } else if (profileData?.role) {
+            console.log("✅ User role:", profileData.role);
+            setUserRole(profileData.role as 'admin' | 'user');
+          } else {
+            console.warn("⚠️ No profile found, defaulting to user");
+            // Create profile with default role if it doesn't exist
+            await supabase
+              .from("profiles")
+              .insert([{ id: u.id, role: 'user' }])
+              .select()
+              .single();
+            setUserRole('user');
+          }
+        } catch (err) {
+          console.error("Exception fetching profile:", err);
+          setUserRole('user');
+        }
+
+        // Fetch predictions history
+        const { data } = await supabase
+          .from("predictions")
+          .select("id, created_at, variety_name, soil_type, user_id")
+          .eq("user_id", u.id)
+          .order("created_at", { ascending: false })
+          .limit(5);
+        if (data) setHistory(data);
+      } catch (error) {
+        console.error("Error in sidebar init:", error);
+        setUserRole('user'); // Default to user on error
+      }
     };
 
     init();
@@ -231,7 +271,10 @@ export default function Sidebar() {
           <SectionLabel>Menu Utama</SectionLabel>
           <div className="space-y-0.5">
             <SideNavItem href="/dashboard" label="Dasbor" icon={IconLayoutDashboard} active={isActive("/dashboard")} />
-            <SideNavItem href="/dashboard/data" label="Manajemen Data" icon={IconDatabase} active={isActive("/dashboard/data")} />
+            {/* Only show Data Management for admin users */}
+            {userRole === 'admin' && (
+              <SideNavItem href="/dashboard/data" label="Manajemen Data" icon={IconDatabase} active={isActive("/dashboard/data")} />
+            )}
             {/* <SideNavItem href="/dashboard/map" label="Peta Sebaran" icon={IconMap2} active={isActive("/dashboard/map")} /> */}
           </div>
 
@@ -415,7 +458,9 @@ export default function Sidebar() {
           />
 
           <BottomNavItem href="/dashboard" label="Dasbor" Icon={IconLayoutDashboard} active={isActive("/dashboard")} />
-          <BottomNavItem href="/dashboard/data" label="Data" Icon={IconDatabase} active={isActive("/dashboard/data")} />
+          {userRole === 'admin' && (
+            <BottomNavItem href="/dashboard/data" label="Data" Icon={IconDatabase} active={isActive("/dashboard/data")} />
+          )}
 
           {/* Center FAB */}
           <Link href="/dashboard/predict" className="relative -mt-6 flex-shrink-0">

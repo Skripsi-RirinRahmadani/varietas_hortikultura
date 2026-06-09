@@ -5,7 +5,7 @@ import AppLayout from '@/components/AppLayout';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { ModelPerformance, ProductionStat } from '@/lib/types';
+import { ModelPerformance, ProductionStat, Commodity } from '@/lib/types';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { 
   BarChart, 
@@ -63,9 +63,23 @@ export default function DashboardPage() {
     async function fetchDashboardData() {
       setLoading(true);
       try {
-        const { count: commoditiesCount } = await supabase
+        // Fetch commodities dengan prioritas order
+        const { data: commoditiesData, count: commoditiesCount } = await supabase
           .from('commodities')
-          .select('*', { count: 'exact', head: true });
+          .select('*', { count: 'exact' })
+          .order('name');
+
+        if (commoditiesData) {
+          // Format commodities untuk display dengan default varieties
+          const formattedCommodities = commoditiesData.map((c: Commodity) => ({
+            id: c.id,
+            name: c.name,
+            image: c.image_url || (getDefaultImageUrl(c.name)),
+            desc: `${c.name} - Varietas hortikultura Aceh Utara`,
+            varieties: getDefaultVarieties(c.name)
+          }));
+          setCommodities(formattedCommodities);
+        }
         setTotalCommodities(commoditiesCount || 0);
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -84,7 +98,7 @@ export default function DashboardPage() {
         if (metadata) {
           const perf = metadata.find(m => m.key === 'model_performance');
           const prod = metadata.find(m => m.key === 'production_stats');
-          
+
           if (perf) setModelPerf(perf.value as ModelPerformance);
           if (prod) setProductionStats(prod.value as ProductionStat[]);
         }
@@ -99,70 +113,7 @@ export default function DashboardPage() {
   }, []);
 
   const [selectedCommodity, setSelectedCommodity] = useState<any>(null);
-
-  const stats = [
-    { 
-      name: 'Ketimun', 
-      image: '/ketimun.png', 
-      desc: 'Cucumis sativus - Segar dan renyah',
-      varieties: ['Hercules F1', 'Mercy F1', 'Roman F1']
-    },
-    { 
-      name: 'Kacang Panjang', 
-      image: '/kacang_panjang.png', 
-      desc: 'Vigna unguiculata - Kaya serat',
-      varieties: ['Parade Tavi', 'Kanton Tavi', 'KP-1']
-    },
-    { 
-      name: 'Kangkung', 
-      image: '/kangkung.png', 
-      desc: 'Ipomoea aquatica - Adaptif di lahan basah',
-      varieties: ['Bangkok LP-1', 'Bisi Kangkung', 'Sutra']
-    },
-    { 
-      name: 'Terung', 
-      image: '/terung.png', 
-      desc: 'Solanum melongena - Tekstur lembut',
-      varieties: ['Mustang F1', 'Laguna F1', 'Antaboga']
-    },
-    { 
-      name: 'Cabe Rawit', 
-      image: '/cabe_rawit.png', 
-      desc: 'Capsicum frutescens - Tingkat kepedasan tinggi',
-      varieties: ['Dewata F1', 'Bara', 'Taruna']
-    },
-    { 
-      name: 'Cabe Keriting', 
-      image: '/cabe_keriting.png', 
-      desc: 'Capsicum annuum - Aroma kuat',
-      varieties: ['TM 999', 'Lado F1', 'Kencana']
-    },
-    { 
-      name: 'Cabe Besar', 
-      image: '/cabe_besar.png', 
-      desc: 'Capsicum annuum L. - Warna merah merona',
-      varieties: ['Tanjung 2', 'Gada MK F1', 'Laris F1']
-    },
-    { 
-      name: 'Tomat', 
-      image: '/tomat.png', 
-      desc: 'Solanum lycopersicum - Kaya Likopen',
-      varieties: ['Servo F1', 'Ratna', 'Intan'],
-      note: 'Varietas Servo F1 tercatat memiliki SK pelepasan Kementan dan diproduksi perusahaan benih resmi'
-    },
-    { 
-      name: 'Semangka', 
-      image: '/semangka.png', 
-      desc: 'Citrullus lanatus - Kadar air tinggi',
-      varieties: ['Crimson Sweet', 'Sugar Baby', 'Amara F1']
-    },
-    { 
-      name: 'Bayam', 
-      image: '/bayam.png', 
-      desc: 'Amaranthus - Sumber Zat Besi',
-      varieties: ['Maestro', 'Bangkok', 'Cempaka']
-    }
-  ];
+  const [commodities, setCommodities] = useState<any[]>([]);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -184,6 +135,40 @@ export default function DashboardPage() {
         stiffness: 80
       }
     }
+  };
+
+  // Helper function untuk default image URL jika tidak ada di database
+  const getDefaultImageUrl = (name: string): string => {
+    const imageMap: Record<string, string> = {
+      'Ketimun': '/ketimun.png',
+      'Kacang Panjang': '/kacang_panjang.png',
+      'Kangkung': '/kangkung.png',
+      'Terung': '/terung.png',
+      'Cabe Rawit': '/cabe_rawit.png',
+      'Cabe Keriting': '/cabe_keriting.png',
+      'Cabe Besar': '/cabe_besar.png',
+      'Tomat': '/tomat.png',
+      'Semangka': '/semangka.png',
+      'Bayam': '/bayam.png',
+    };
+    return imageMap[name] || '/horticulture_hero.png';
+  };
+
+  // Helper function untuk default varieties
+  const getDefaultVarieties = (name: string): string[] => {
+    const varietiesMap: Record<string, string[]> = {
+      'Ketimun': ['Hercules F1', 'Mercy F1', 'Roman F1'],
+      'Kacang Panjang': ['Parade Tavi', 'Kanton Tavi', 'KP-1'],
+      'Kangkung': ['Bangkok LP-1', 'Bisi Kangkung', 'Sutra'],
+      'Terung': ['Mustang F1', 'Laguna F1', 'Antaboga'],
+      'Cabe Rawit': ['Dewata F1', 'Bara', 'Taruna'],
+      'Cabe Keriting': ['TM 999', 'Lado F1', 'Kencana'],
+      'Cabe Besar': ['Tanjung 2', 'Gada MK F1', 'Laris F1'],
+      'Tomat': ['Servo F1', 'Ratna', 'Intan'],
+      'Semangka': ['Crimson Sweet', 'Sugar Baby', 'Amara F1'],
+      'Bayam': ['Maestro', 'Bangkok', 'Cempaka'],
+    };
+    return varietiesMap[name] || [];
   };
 
   return (
@@ -227,7 +212,7 @@ export default function DashboardPage() {
 
           {/* Gallery Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-            {stats.map((plant, index) => (
+            {commodities.map((plant, index) => (
               <motion.div 
                 key={index}
                 variants={itemVariants}
@@ -235,12 +220,18 @@ export default function DashboardPage() {
                 onClick={() => setSelectedCommodity(plant)}
                 className="group relative cursor-pointer"
               >
-                <div className="relative aspect-[3/4] rounded-[32px] overflow-hidden shadow-lg group-hover:shadow-primary/30 transition-all duration-500">
-                  <img 
-                    src={plant.image} 
-                    alt={plant.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                <div className="relative aspect-[3/4] rounded-[32px] overflow-hidden shadow-lg group-hover:shadow-primary/30 transition-all duration-500 bg-muted">
+                  {plant.image ? (
+                    <img
+                      src={plant.image}
+                      alt={plant.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-muted">
+                      <span className="text-muted-foreground">Gambar tidak tersedia</span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
                   
                   <div className="absolute inset-0 p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:translate-y-[-8px]">
@@ -316,18 +307,24 @@ export default function DashboardPage() {
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
             
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="relative w-full max-w-4xl bg-white dark:bg-stone-900 rounded-[48px] overflow-hidden shadow-2xl border border-stone-200 dark:border-stone-800 flex flex-col md:flex-row max-h-[90vh]"
             >
-              <div className="w-full md:w-1/2 h-64 md:h-auto relative">
-                <img 
-                  src={selectedCommodity.image} 
-                  alt={selectedCommodity.name} 
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-full md:w-1/2 h-64 md:h-auto relative bg-stone-100 dark:bg-stone-800">
+                {selectedCommodity.image ? (
+                  <img
+                    src={selectedCommodity.image}
+                    alt={selectedCommodity.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-muted-foreground">Gambar tidak tersedia</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent md:hidden" />
               </div>
               
@@ -335,7 +332,7 @@ export default function DashboardPage() {
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <h2 className="text-4xl font-black tracking-tighter mb-2 text-stone-900 dark:text-stone-50">{selectedCommodity.name}</h2>
-                    <p className="text-green-700 dark:text-green-400 font-bold text-sm uppercase tracking-widest">{selectedCommodity.desc.split(' - ')[0]}</p>
+                    <p className="text-green-700 dark:text-green-400 font-bold text-sm uppercase tracking-widest">{selectedCommodity.name}</p>
                   </div>
                   <button 
                     onClick={() => setSelectedCommodity(null)}

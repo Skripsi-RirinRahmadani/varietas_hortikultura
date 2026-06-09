@@ -64,6 +64,7 @@ export interface Profile {
   id: string;
   full_name?: string;
   avatar_url?: string;
+  role: 'admin' | 'user';
   updated_at?: string;
   // from auth.users via join
   email?: string;

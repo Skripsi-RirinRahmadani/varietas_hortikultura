@@ -45,10 +45,20 @@ CREATE TABLE IF NOT EXISTS predictions (
   user_id UUID
 );
 
+-- Profiles table (to store user role and metadata)
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name TEXT,
+  avatar_url TEXT,
+  role TEXT DEFAULT 'user' NOT NULL CHECK (role IN ('admin', 'user')),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- Enable RLS
 ALTER TABLE districts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE commodities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE predictions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Basic Policies
 -- Districts: Read for all, Write for authenticated (admin usually)
@@ -63,7 +73,35 @@ CREATE POLICY "Commodities can be modified by authenticated users" ON commoditie
 
 -- Predictions: Read for all, Write for anyone (or authenticated)
 CREATE POLICY "Predictions are viewable by everyone" ON predictions FOR SELECT USING (true);
-CREATE POLICY "Predictions can be inserted by anyone" ON predictions 
+CREATE POLICY "Predictions can be inserted by anyone" ON predictions
   FOR INSERT WITH CHECK (true);
-CREATE POLICY "Predictions can be modified by authenticated users" ON predictions 
+CREATE POLICY "Predictions can be modified by authenticated users" ON predictions
   FOR UPDATE, DELETE TO authenticated USING (true);
+
+-- Profiles: Each user can read their own, admins can read all
+CREATE POLICY "Profiles are readable by owner or admin" ON profiles
+  FOR SELECT USING (
+    auth.uid() = id OR
+    (SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'
+  );
+CREATE POLICY "Users can update their own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Trigger to create profile automatically when new user is created
+CREATE OR REPLACE FUNCTION public.create_profile_for_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, role)
+  VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name', 'user')
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Drop trigger if exists to avoid conflicts
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Create trigger
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.create_profile_for_user();

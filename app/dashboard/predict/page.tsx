@@ -115,7 +115,9 @@ export default function PredictPage() {
 
   const savePredictionToSupabase = async (kecamatan: string, confidence: string, recommendations: any[]) => {
     const { data: { user } } = await supabase.auth.getUser();
+    // Only save if user is logged in
     if (!user) return;
+
     const phVal = parseFloat(formData.ph);
     const elevationVal = parseFloat(formData.elevation);
     const soilType = elevationVal > 800 ? "Andosol" : phVal < 5.5 ? "Ultisol" : phVal > 7.0 ? "Aluvial" : "Inceptisol";

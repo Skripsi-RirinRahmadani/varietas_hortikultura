@@ -154,12 +154,27 @@ export default function RegisterPage() {
     }
 
     try {
-      const { error: authError } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { full_name: fullName } },
       });
       if (authError) throw authError;
+
+      // Create profile for new user with default role 'user'
+      if (authData.user) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert([
+            {
+              id: authData.user.id,
+              full_name: fullName,
+              role: 'user',
+            },
+          ]);
+        if (profileError) console.error("Error creating profile:", profileError);
+      }
+
       setSuccess(true);
       setTimeout(() => router.push("/login"), 3000);
     } catch (err: unknown) {

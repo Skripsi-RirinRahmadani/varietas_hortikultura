@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import AppLayout from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 import { Commodity, District, Prediction, Variety, Profile } from "@/lib/types";
 import CommodityDialog from "@/components/CommodityDialog";
 import { exportToCSV, parseCSV } from "@/lib/csv-utils";
@@ -865,6 +866,7 @@ function TabPengguna() {
   const [sortField, setSortField] = useState("updated_at");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
+  const [updatingRole, setUpdatingRole] = useState<string | null>(null);
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -881,6 +883,26 @@ function TabPengguna() {
     else { setSortField(field); setSortDir("asc"); }
   };
 
+  const handleRoleChange = async (userId: string, newRole: 'admin' | 'user') => {
+    setUpdatingRole(userId);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ role: newRole })
+        .eq("id", userId);
+
+      if (!error) {
+        setData(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+      } else {
+        alert("Gagal mengubah role: " + error.message);
+      }
+    } catch (err) {
+      alert("Error: " + (err as Error).message);
+    } finally {
+      setUpdatingRole(null);
+    }
+  };
+
   const filtered = data
     .filter(d => !search || d.full_name?.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
@@ -891,7 +913,7 @@ function TabPengguna() {
 
   const cols = [
     { label: "Pengguna", field: "full_name" },
-    { label: "ID", field: "id" },
+    { label: "Role", field: "role" },
     { label: "Terakhir Update", field: "updated_at" },
   ];
 
@@ -901,9 +923,9 @@ function TabPengguna() {
       <CountBar total={filtered.length} hasFilter={!!search} onReset={() => setSearch("")} />
 
       {/* Info banner */}
-      <div className="mx-5 mt-3 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 text-xs text-amber-700 dark:text-amber-400">
+      <div className="mx-5 mt-3 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 text-xs text-blue-700 dark:text-blue-400">
         <IconAlertCircle size={14} className="flex-shrink-0" />
-        Data pengguna ditampilkan dari tabel <code className="font-mono bg-amber-100 dark:bg-amber-900/30 px-1 rounded">profiles</code>. Manajemen akun lengkap tersedia di Supabase Auth.
+        Kelola role pengguna di sini. <strong>Admin</strong> dapat akses Manajemen Data, <strong>User</strong> hanya akses fitur prediksi.
       </div>
 
       <div className="hidden md:block overflow-x-auto mt-3">
@@ -916,10 +938,11 @@ function TabPengguna() {
                   <div className="flex items-center gap-1.5">{c.label}<SortIcon active={sortField === c.field} dir={sortDir} /></div>
                 </th>
               ))}
+              <th className="px-5 py-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {loading ? <SkeletonRows cols={2} /> : paged.map(item => (
+            {loading ? <SkeletonRows cols={cols.length} /> : paged.map(item => (
               <tr key={item.id} className="hover:bg-muted/30 transition-colors group">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
@@ -937,9 +960,35 @@ function TabPengguna() {
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-4 font-mono text-xs text-muted-foreground">{item.id}</td>
+                <td className="px-5 py-4">
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={item.role}
+                      onChange={(e) => handleRoleChange(item.id, e.target.value as 'admin' | 'user')}
+                      disabled={updatingRole === item.id}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        color: item.role === 'admin' ? '#16a34a' : '#6b7280',
+                        background: item.role === 'admin' ? 'rgba(16, 185, 129, 0.08)' : 'var(--background)'
+                      }}>
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    {updatingRole === item.id && (
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    )}
+                  </div>
+                </td>
                 <td className="px-5 py-4 text-xs text-muted-foreground">
                   {item.updated_at ? new Date(item.updated_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                </td>
+                <td className="px-5 py-4 text-right">
+                  <span className="text-[11px] font-semibold px-2 py-1 rounded-lg" style={{
+                    background: item.role === 'admin' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                    color: item.role === 'admin' ? '#16a34a' : '#6b7280'
+                  }}>
+                    {item.role === 'admin' ? '👑 Admin' : '👤 User'}
+                  </span>
                 </td>
               </tr>
             ))}
@@ -949,14 +998,40 @@ function TabPengguna() {
       {/* Mobile */}
       <div className="md:hidden divide-y divide-border">
         {paged.map(item => (
-          <div key={item.id} className="p-4 flex items-center gap-3">
-            {item.avatar_url
-              ? <img src={item.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover border border-border flex-shrink-0" />
-              : <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-black flex-shrink-0" style={{ background: "linear-gradient(135deg,#00450d,#1b6d24)" }}>{item.full_name?.[0]?.toUpperCase() ?? "?"}</div>
-            }
-            <div className="min-w-0">
-              <p className="font-bold text-sm text-foreground truncate">{item.full_name || "Tanpa nama"}</p>
-              <p className="text-[10px] font-mono text-muted-foreground truncate">{item.id}</p>
+          <div key={item.id} className="p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              {item.avatar_url
+                ? <img src={item.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover border border-border flex-shrink-0" />
+                : <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-black flex-shrink-0" style={{ background: "linear-gradient(135deg,#00450d,#1b6d24)" }}>{item.full_name?.[0]?.toUpperCase() ?? "?"}</div>
+              }
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-sm text-foreground truncate">{item.full_name || "Tanpa nama"}</p>
+                <p className="text-[10px] font-mono text-muted-foreground truncate">{item.id}</p>
+              </div>
+              <span className="text-[11px] font-semibold px-2 py-1 rounded-lg flex-shrink-0" style={{
+                background: item.role === 'admin' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                color: item.role === 'admin' ? '#16a34a' : '#6b7280'
+              }}>
+                {item.role === 'admin' ? '👑' : '👤'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] font-semibold text-muted-foreground">Role:</label>
+              <select
+                value={item.role}
+                onChange={(e) => handleRoleChange(item.id, e.target.value as 'admin' | 'user')}
+                disabled={updatingRole === item.id}
+                className="flex-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  color: item.role === 'admin' ? '#16a34a' : '#6b7280',
+                  background: item.role === 'admin' ? 'rgba(16, 185, 129, 0.08)' : 'var(--background)'
+                }}>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+              {updatingRole === item.id && (
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              )}
             </div>
           </div>
         ))}
@@ -971,14 +1046,63 @@ function TabPengguna() {
 // MAIN PAGE
 // ════════════════════════════════════════════════════════════════════
 export default function DataManagementPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>("komoditas");
   const [commodities, setCommodities] = useState<Commodity[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const checkAdminAccess = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (profileData?.role !== 'admin') {
+        router.push("/dashboard");
+        return;
+      }
+
+      setIsAdmin(true);
+      setLoading(false);
+    };
+
+    checkAdminAccess();
+  }, [router]);
+
+  // Fetch commodities and districts once admin is verified
+  useEffect(() => {
+    if (!isAdmin) return; // Only fetch if admin
+
     supabase.from("commodities").select("id, name").order("name").then(({ data }) => { if (data) setCommodities(data as any); });
     supabase.from("districts").select("*").order("name").then(({ data }) => { if (data) setDistricts(data); });
-  }, []);
+  }, [isAdmin]);
+
+  if (loading) {
+    return (
+      <AppLayout title="Manajemen Data">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-muted-foreground">Mengecek izin akses...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
 
   const currentTab = TABS.find(t => t.key === activeTab)!;
 

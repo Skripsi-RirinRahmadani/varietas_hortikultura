@@ -361,10 +361,10 @@ export default function LandingPage() {
           className="relative mt-10 flex flex-col sm:flex-row items-center gap-4"
         >
           <ShimmerButton
-            href="/login"
+            href="/predict"
             className="bg-primary text-primary-foreground shadow-lg shadow-primary/20"
           >
-            Mulai Sekarang <ArrowRight className="w-4 h-4" />
+            Coba Gratis <ArrowRight className="w-4 h-4" />
           </ShimmerButton>
           <ShimmerButton
             href="/register"
@@ -652,12 +652,12 @@ export default function LandingPage() {
                   className="flex flex-col sm:flex-row gap-3"
                 >
                   <Link
-                    href="/login"
+                    href="/predict"
                     className="group relative flex-1 py-3.5 rounded-xl font-headline font-bold text-sm text-center overflow-hidden transition-all duration-300"
                     style={{ background: "linear-gradient(135deg, #16a34a, #15803d)", color: "#f0fff4", boxShadow: "0 4px 24px rgba(74,222,128,0.25)" }}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
-                      Masuk ke Sistem <ArrowRight className="w-4 h-4" />
+                      Coba Gratis <ArrowRight className="w-4 h-4" />
                     </span>
                     {/* shimmer */}
                     <motion.div
