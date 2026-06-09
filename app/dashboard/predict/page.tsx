@@ -12,6 +12,9 @@ import {
   IconSparkles, IconCheck, IconBulb, IconHistory, IconArrowRight,
 } from "@tabler/icons-react";
 
+// HuggingFace Spaces API endpoint
+const API_BASE_URL = "https://itsprzvl-hortikultura-randomforest.hf.space";
+
 const fallbackKecamatanList = [
   "Baktiya", "Baktiya Barat", "Banda Baro", "Cot Girek", "Dewantara",
   "Geureudong Pase", "Kuta Makmur", "Langkahan", "Lapang", "Lhoksukon",
@@ -75,20 +78,34 @@ export default function PredictPage() {
         const { data } = await supabase.from("predictions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5);
         if (data) setHistory(data);
       }
-      const res = await fetch(fallbackKecamatanList[0] ? "http://127.0.0.1:8000/kecamatan" : "").catch(() => null);
-      setKecamatanList(res ? (await res.json()).kecamatan : fallbackKecamatanList);
+      try {
+        const res = await fetch(`${API_BASE_URL}/kecamatan`, {
+          method: "GET",
+          signal: AbortSignal.timeout(5000)
+        });
+        if (res?.ok) {
+          const data = await res.json();
+          setKecamatanList(data.kecamatan || fallbackKecamatanList);
+        } else {
+          setKecamatanList(fallbackKecamatanList);
+        }
+      } catch {
+        setKecamatanList(fallbackKecamatanList);
+      }
     };
     load();
     checkApiStatus();
-    const interval = setInterval(checkApiStatus, 10000);
+    const interval = setInterval(checkApiStatus, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const checkApiStatus = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/", { method: "GET", signal: AbortSignal.timeout(1500) }).catch(() =>
-        fetch("http://localhost:8000/", { method: "GET", signal: AbortSignal.timeout(1500) })
-      );
+      const res = await fetch(`${API_BASE_URL}/`, {
+        method: "GET",
+        signal: AbortSignal.timeout(5000),
+        headers: { "Accept": "application/json" }
+      });
       setIsApiOnline(res?.ok ? "online" : "offline");
       if (res?.ok) setShowOfflineAlert(false);
     } catch {
@@ -169,9 +186,12 @@ export default function PredictPage() {
     };
     if (isApiOnline === "online") {
       try {
-        const res = await fetch("http://127.0.0.1:8000/predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).catch(() =>
-          fetch("http://localhost:8000/predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
-        );
+        const res = await fetch(`${API_BASE_URL}/predict`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(10000)
+        });
         if (res?.ok) {
           const data = await res.json();
           if (data.status === "success") {
@@ -197,8 +217,9 @@ export default function PredictPage() {
     if (env) setFormData({ ph: env.ph, temperature: env.temperature, rainfall: env.rainfall, elevation: env.elevation });
     if (isApiOnline === "online") {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/kecamatan/${selectedKecamatan}/recommend`).catch(() =>
-          fetch(`http://localhost:8000/kecamatan/${selectedKecamatan}/recommend`)
+        const res = await fetch(
+          `${API_BASE_URL}/kecamatan/${encodeURIComponent(selectedKecamatan)}/recommend`,
+          { signal: AbortSignal.timeout(10000) }
         );
         if (res?.ok) {
           const data = await res.json();
