@@ -4,6 +4,71 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  IconLayoutDashboard,
+  IconDatabase,
+  IconMap2,
+  IconHistory,
+  IconPlant2,
+} from '@tabler/icons-react';
+
+// ── Bottom bar nav item ────────────────────────────────────────────────────────
+function NavItem({
+  href,
+  label,
+  Icon,
+  active,
+}: {
+  href: string;
+  label: string;
+  Icon: React.ElementType;
+  active: boolean;
+}) {
+  return (
+    <Link href={href} className="relative flex flex-col items-center justify-center gap-1 flex-1 h-full group">
+      <motion.div
+        whileTap={{ scale: 0.85 }}
+        className="relative flex flex-col items-center gap-1"
+      >
+        {/* Active pill background */}
+        {active && (
+          <motion.div
+            layoutId="bottom-active-bg"
+            className="absolute -inset-x-3 -inset-y-1.5 rounded-2xl"
+            style={{ background: "rgba(0,69,13,0.08)" }}
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          />
+        )}
+
+        <div className="relative">
+          <Icon
+            size={22}
+            stroke={active ? 2.2 : 1.6}
+            className="transition-colors duration-200"
+            style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
+          />
+          {/* Active dot */}
+          {active && (
+            <motion.div
+              layoutId="bottom-active-dot"
+              className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+              style={{ background: "var(--primary)" }}
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            />
+          )}
+        </div>
+
+        <span
+          className="text-[10px] font-semibold transition-colors duration-200 relative"
+          style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
+        >
+          {label}
+        </span>
+      </motion.div>
+    </Link>
+  );
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -207,54 +272,65 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Navigation for Mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-stone-950/90 backdrop-blur-lg px-6 h-16 flex justify-between items-center z-50 border-t border-stone-200 dark:border-stone-800">
-        {navItems.map((item) => (
-          <Link 
-            key={item.href}
-            href={item.href} 
-            className={`flex flex-col items-center gap-1 ${
-              isActive(item.href) ? 'text-green-900 dark:text-green-400' : 'text-stone-500 dark:text-stone-400'
-            }`}
-          >
-            <span 
-              className="material-symbols-outlined"
-              style={{ fontVariationSettings: isActive(item.href) ? "'FILL' 1" : "'FILL' 0" }}
+      {/* ── Floating Bottom Bar (Mobile) ── */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
+        <div
+          className="relative flex items-center justify-between px-3 h-16 rounded-[24px] overflow-visible"
+          style={{
+            background: "var(--card)",
+            border: "1px solid var(--border)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
+          }}
+        >
+          {/* Subtle top glowing line */}
+          <div
+            className="absolute top-0 left-8 right-8 h-[1px] rounded-full"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(0,69,13,0.25), transparent)" }}
+          />
+
+          {[
+            { href: '/dashboard',         label: 'Dasbor',  Icon: IconLayoutDashboard },
+            { href: '/dashboard/data',    label: 'Data',    Icon: IconDatabase },
+          ].map(({ href, label, Icon }) => (
+            <NavItem key={href} href={href} label={label} Icon={Icon} active={isActive(href)} />
+          ))}
+
+          {/* Center FAB */}
+          <Link href="/dashboard/predict" className="relative -mt-6 flex-shrink-0">
+            <motion.div
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.05 }}
+              className="relative w-14 h-14 rounded-[18px] flex items-center justify-center overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #00450d 0%, #1b6d24 100%)",
+                boxShadow: "0 4px 20px rgba(0,69,13,0.45), 0 0 0 3px var(--card), 0 0 0 4px rgba(0,69,13,0.15)",
+              }}
             >
-              {item.icon}
-            </span>
-            <span className="text-[10px] font-bold">{item.label.split(' ')[0]}</span>
+              {/* shimmer */}
+              <motion.div
+                className="absolute inset-0 opacity-30"
+                style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)" }}
+              />
+              <IconPlant2 size={26} className="text-white relative z-10" stroke={1.8} />
+
+              {/* Active dot if on predict page */}
+              {isActive('/dashboard/predict') && (
+                <motion.div
+                  layoutId="fab-active"
+                  className="absolute bottom-1.5 right-1.5 w-2 h-2 rounded-full bg-green-300"
+                />
+              )}
+            </motion.div>
           </Link>
-        ))}
-        <Link 
-          href="/dashboard/results" 
-          className={`flex flex-col items-center gap-1 ${
-            isActive('/dashboard/results') ? 'text-green-900 dark:text-green-400' : 'text-stone-500 dark:text-stone-400'
-          }`}
-        >
-          <span 
-            className="material-symbols-outlined"
-            style={{ fontVariationSettings: isActive('/dashboard/results') ? "'FILL' 1" : "'FILL' 0" }}
-          >
-            psychology
-          </span>
-          <span className="text-[10px] font-bold">Histori</span>
-        </Link>
-        <Link 
-          href="/dashboard/predict" 
-          className={`flex flex-col items-center gap-1 ${
-            isActive('/dashboard/predict') ? 'text-green-900 dark:text-green-400' : 'text-stone-500 dark:text-stone-400'
-          }`}
-        >
-          <span 
-            className="material-symbols-outlined"
-            style={{ fontVariationSettings: isActive('/dashboard/predict') ? "'FILL' 1" : "'FILL' 0" }}
-          >
-            add_circle
-          </span>
-          <span className="text-[10px] font-bold">Prediksi</span>
-        </Link>
-      </nav>
+
+          {[
+            { href: '/dashboard/map',     label: 'Peta',    Icon: IconMap2 },
+            { href: '/dashboard/results', label: 'Histori', Icon: IconHistory },
+          ].map(({ href, label, Icon }) => (
+            <NavItem key={href} href={href} label={label} Icon={Icon} active={isActive(href)} />
+          ))}
+        </div>
+      </div>
     </>
   );
 }

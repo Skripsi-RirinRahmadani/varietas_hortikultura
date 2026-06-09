@@ -1,14 +1,146 @@
 "use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import {
+  Leaf,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  AlertCircle,
+  Sprout,
+  MapPin,
+  BarChart3,
+  LogIn,
+} from "lucide-react";
+
+// ── Floating particle for left panel ────────────────────────────────────────
+function Particles() {
+  const items = Array.from({ length: 18 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    r: Math.random() * 3 + 1.5,
+    delay: Math.random() * 5,
+    dur: Math.random() * 8 + 10,
+  }));
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {items.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.r * 2,
+            height: p.r * 2,
+            background: "rgba(134,239,172,0.35)",
+          }}
+          animate={{ y: [-14, 14, -14], opacity: [0.2, 0.7, 0.2] }}
+          transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ── Input Field ───────────────────────────────────────────────────────────────
+function InputField({
+  id,
+  label,
+  type,
+  placeholder,
+  value,
+  onChange,
+  icon: Icon,
+  suffix,
+  autoComplete,
+}: {
+  id: string;
+  label: string;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  icon: React.ElementType;
+  suffix?: React.ReactNode;
+  autoComplete?: string;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-0.5">
+        {label}
+      </label>
+      <div
+        className="relative flex items-center rounded-xl transition-all duration-200"
+        style={{
+          background: "rgba(0,69,13,0.04)",
+          border: `1.5px solid ${focused ? "#00450d" : "rgba(0,69,13,0.15)"}`,
+          boxShadow: focused ? "0 0 0 3px rgba(0,69,13,0.08)" : "none",
+        }}
+      >
+        <div className="absolute left-3.5 flex items-center pointer-events-none">
+          <Icon
+            className="w-4 h-4 transition-colors duration-200"
+            style={{ color: focused ? "#00450d" : "#9ca3af" }}
+          />
+        </div>
+        <input
+          id={id}
+          name={id}
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          autoComplete={autoComplete}
+          required
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full pl-10 pr-10 py-3.5 bg-transparent text-foreground text-sm placeholder-muted-foreground/50 focus:outline-none font-body"
+        />
+        {suffix && <div className="absolute right-3">{suffix}</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── Stats badge ───────────────────────────────────────────────────────────────
+function StatBadge({ icon: Icon, label, value, delay }: { icon: React.ElementType; label: string; value: string; delay: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.6 }}
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl"
+      style={{
+        background: "rgba(255,255,255,0.09)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.12)",
+      }}
+    >
+      <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+        style={{ background: "rgba(74,222,128,0.2)" }}>
+        <Icon className="w-4 h-4 text-green-300" />
+      </div>
+      <div>
+        <div className="text-white font-headline font-bold text-sm leading-none">{value}</div>
+        <div className="text-white/60 text-[11px] mt-0.5">{label}</div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -17,197 +149,276 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
       if (authError) throw authError;
-
-      // Successful login
-      router.push('/dashboard');
+      router.push("/dashboard");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || 'Terjadi kesalahan saat login.');
+    } catch (err: unknown) {
+      setError((err as Error).message || "Terjadi kesalahan saat login.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen grid grid-cols-1 md:grid-cols-12 items-stretch bg-background font-body text-on-surface overflow-hidden">
-      {/* Branding Section (Editorial Column) */}
-      <section 
-        className="hidden md:flex md:col-span-7 lg:col-span-8 bg-login-hero flex-col justify-between p-12 relative overflow-hidden" 
+    <main className="min-h-screen flex bg-background font-body overflow-hidden">
+
+      {/* ── Left Panel ── */}
+      <div
+        className="hidden lg:flex lg:w-[55%] xl:w-[60%] relative flex-col"
         style={{
-          backgroundImage: 'linear-gradient(rgba(0, 69, 13, 0.4), rgba(0, 69, 13, 0.7)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuC4vXmGxAW5-D_Gxk4TslCld8DKL5TcnL316sscZZM2SJ9EVX-I6oe1DacPaM95ZyRqA7jomjKsXdKVuGw6jiX4LkylYT5CshYes-WIHrvTRNjRvLjmSxMQpBmFqfVU1ul0EgKsu7x0p0F4Qlkmldjk6o3hne4jNIbBUELzlnblCWm-6qUrRlY-FzjStDd20hxVUlk-IGMjfgyyy8b4OTrYD0O4jpDxLnQEWU-12i_PMGFH_CiD9OYrVSY_dX6AAl0uAi3Pk8g0SH1T)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          background: "linear-gradient(150deg, #001a05 0%, #003010 40%, #004d16 70%, #006620 100%)",
         }}
       >
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-3 bg-surface-bright/20 backdrop-blur-md px-4 py-2 rounded-xl">
-            <span className="material-symbols-outlined text-surface-bright" data-icon="potted_plant">potted_plant</span>
-            <span className="text-surface-bright font-headline font-black uppercase tracking-widest text-xs">Dinas Pertanian</span>
-          </div>
-        </div>
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="font-headline text-5xl lg:text-7xl font-extrabold text-white leading-tight tracking-tighter">
-            Rancang Bangun Sistem Rekomendasi Pemilihan Varietas Unggulan Tanaman Hortikultura
-          </h1>
-          <div className="mt-8 h-1 w-24 bg-primary-fixed"></div>
-          <p className="mt-8 text-surface-bright/90 text-lg lg:text-xl font-medium leading-relaxed">
-            Meningkatkan ketahanan pangan melalui inovasi data dan pemilihan varietas unggul bagi petani Aceh Utara.
-          </p>
-        </div>
-        <div className="relative z-10 flex justify-between items-end border-t border-white/10 pt-8">
-          <div className="flex flex-col">
-            <span className="text-white/60 font-label text-xs uppercase tracking-widest">Wilayah Kerja</span>
-            <span className="text-white font-headline font-bold">Aceh Utara, Indonesia</span>
-          </div>
-          <div className="text-right">
-            <span className="text-white/40 text-[10px] uppercase tracking-tighter">Digital Agronomist Interface v2.0</span>
-          </div>
-        </div>
-        {/* Glass Overlay for Texture */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-primary/60 to-transparent pointer-events-none"></div>
-      </section>
+        <Particles />
 
-      {/* Login Panel (Focus Area) */}
-      <section className="col-span-1 md:col-span-5 lg:col-span-4 bg-surface flex flex-col justify-center px-8 lg:px-16 py-12 relative">
-        {/* Mobile Header Only */}
-        <div className="md:hidden mb-12 flex flex-col items-center text-center">
-          <span className="material-symbols-outlined text-primary text-5xl mb-4" data-icon="agriculture">agriculture</span>
-          <h2 className="font-headline font-bold text-xl text-primary leading-tight">Dinas Pertanian dan Tanaman Pangan Aceh Utara</h2>
-        </div>
-        
-        <div className="w-full max-w-sm mx-auto z-10">
-          <div className="mb-10 text-left">
-            <h3 className="font-headline font-bold text-3xl text-on-surface tracking-tight mb-2">Portal Akses</h3>
-            <p className="text-on-surface-variant font-body">Silahkan masuk untuk mengelola sistem rekomendasi varietas.</p>
-          </div>
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(134,239,172,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(134,239,172,0.05) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
 
-          {error && (
-            <div className="mb-6 p-4 bg-error-container text-on-error-container rounded-xl text-sm font-medium flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <span className="material-symbols-outlined text-xl" data-icon="error">error</span>
-              {error}
+        {/* Glow blobs */}
+        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(74,222,128,0.12) 0%, transparent 70%)" }} />
+        <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full blur-3xl pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(0,150,50,0.2) 0%, transparent 70%)" }} />
+
+        {/* Right glowing border */}
+        <div className="absolute top-0 right-0 bottom-0 w-[1px]"
+          style={{ background: "linear-gradient(to bottom, transparent, rgba(74,222,128,0.4), rgba(134,239,172,0.5), rgba(74,222,128,0.4), transparent)" }} />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col h-full p-12 xl:p-16">
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-3"
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: "rgba(74,222,128,0.2)", border: "1px solid rgba(74,222,128,0.4)" }}>
+              <Leaf className="w-5 h-5 text-green-300" />
             </div>
-          )}
-          
-          <form className="space-y-6" onSubmit={handleLogin}>
-            <div className="space-y-1.5">
-              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="email">Email</label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="material-symbols-outlined text-on-surface-variant text-xl group-focus-within:text-primary transition-colors" data-icon="mail">mail</span>
-                </div>
-                <input 
-                  autoComplete="email" 
-                  className="w-full pl-12 pr-4 py-4 bg-surface-container-highest border-none focus:ring-0 rounded-xl font-body text-on-surface placeholder-on-surface-variant/50 transition-all duration-200" 
-                  id="email" 
-                  name="email" 
-                  placeholder="Masukkan email anda" 
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-primary transition-all duration-300 group-focus-within:w-full"></div>
-              </div>
-            </div>
-            
-            <div className="space-y-1.5">
-              <label className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" htmlFor="password">Kata Sandi</label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="material-symbols-outlined text-on-surface-variant text-xl group-focus-within:text-primary transition-colors" data-icon="lock">lock</span>
-                </div>
-                <input 
-                  autoComplete="current-password" 
-                  className="w-full pl-12 pr-12 py-4 bg-surface-container-highest border-none focus:ring-0 rounded-xl font-body text-on-surface placeholder-on-surface-variant/50 transition-all duration-200" 
-                  id="password" 
-                  name="password" 
-                  placeholder="••••••••" 
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                  <button 
-                    className="text-on-surface-variant hover:text-primary transition-colors" 
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    <span className="material-symbols-outlined" data-icon={showPassword ? "visibility_off" : "visibility"}>
-                      {showPassword ? "visibility_off" : "visibility"}
-                    </span>
-                  </button>
-                </div>
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-primary transition-all duration-300 group-focus-within:w-full"></div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between py-2">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input className="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20 bg-surface" type="checkbox"/>
-                <span className="text-sm font-medium text-on-surface-variant group-hover:text-on-surface transition-colors">Ingat saya</span>
-              </label>
-              <Link className="text-sm font-semibold text-primary hover:underline underline-offset-4 decoration-2" href="#">Lupa sandi?</Link>
-            </div>
-            
-            <button 
-              disabled={loading}
-              className="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold rounded-xl shadow-lg shadow-primary/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
-              type="submit"
+            <span className="text-white/90 font-headline font-black text-xs uppercase tracking-[0.2em]">
+              SiVartas
+            </span>
+          </motion.div>
+
+          {/* Main copy */}
+          <div className="flex-1 flex flex-col justify-center mt-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full w-fit mb-8"
+              style={{
+                background: "rgba(74,222,128,0.12)",
+                border: "1px solid rgba(74,222,128,0.3)",
+              }}
             >
-              {loading ? (
-                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              ) : (
-                <>
-                  <span>Login Ke Sistem</span>
-                  <span className="material-symbols-outlined text-xl" data-icon="login">login</span>
-                </>
-              )}
-            </button>
-          </form>
+              <span className="text-green-300 text-[11px] font-semibold uppercase tracking-widest">
+                Dinas Pertanian Aceh Utara
+              </span>
+            </motion.div>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-on-surface-variant">
-              Belum punya akun?{' '}
-              <Link href="/register" className="text-primary font-bold hover:underline">
-                Daftar Sekarang
-              </Link>
+            <motion.h1
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="font-headline font-black leading-[1.1] tracking-tight"
+              style={{ fontSize: "clamp(2.5rem, 4vw, 3.8rem)", color: "#f0fff4" }}
+            >
+              Sistem{" "}
+              <span
+                style={{
+                  background: "linear-gradient(135deg, #4ade80 0%, #86efac 50%, #bbf7d0 100%)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Rekomendasi
+              </span>
+              <br />
+              Varietas Unggulan
+              <br />
+              Hortikultura
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.45 }}
+              className="mt-6 text-base leading-relaxed max-w-md"
+              style={{ color: "rgba(187,247,208,0.7)" }}
+            >
+              Meningkatkan ketahanan pangan melalui inovasi data dan pemilihan varietas unggul
+              bagi petani Aceh Utara.
+            </motion.p>
+
+            {/* Stats row */}
+            <div className="mt-12 grid grid-cols-3 gap-3">
+              <StatBadge icon={Sprout} value="120+" label="Varietas" delay={0.6} />
+              <StatBadge icon={MapPin} value="27" label="Kecamatan" delay={0.7} />
+              <StatBadge icon={BarChart3} value="98%" label="Akurasi" delay={0.8} />
+            </div>
+          </div>
+
+          {/* Footer text */}
+        </div>
+      </div>
+
+      {/* ── Right Panel ── */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 relative bg-background">
+        {/* Subtle dot grid */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-40"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(0,69,13,0.12) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at center, transparent 40%, var(--background) 100%)" }} />
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="relative w-full max-w-[400px]"
+        >
+          {/* Mobile logo */}
+          <div className="lg:hidden flex items-center gap-3 mb-10">
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+              <Leaf className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="font-headline font-black text-sm uppercase tracking-widest text-foreground">SiVartas</span>
+          </div>
+
+          {/* Header */}
+          <div className="mb-8">
+            <h2 className="font-headline font-black text-3xl text-foreground tracking-tight">Selamat Datang</h2>
+            <p className="text-muted-foreground text-sm mt-1.5">
+              Masuk ke akun Anda untuk melanjutkan
             </p>
           </div>
-          
-          <div className="mt-12 flex flex-col items-center gap-6">
-            <div className="flex items-center gap-4 w-full">
-              <div className="h-[1px] flex-grow bg-outline-variant/30"></div>
-              <span className="text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant/40">Dikelola Oleh</span>
-              <div className="h-[1px] flex-grow bg-outline-variant/30"></div>
+
+          {/* Error */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: "auto" }}
+                exit={{ opacity: 0, y: -8, height: 0 }}
+                className="mb-6 p-4 rounded-xl flex items-start gap-3 text-sm font-medium overflow-hidden"
+                style={{
+                  background: "rgba(186,26,26,0.08)",
+                  border: "1px solid rgba(186,26,26,0.2)",
+                  color: "#ba1a1a",
+                }}
+              >
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Form */}
+          <form onSubmit={handleLogin} className="flex flex-col gap-5">
+            <InputField
+              id="email"
+              label="Email"
+              type="email"
+              placeholder="nama@email.com"
+              value={email}
+              onChange={setEmail}
+              icon={Mail}
+              autoComplete="email"
+            />
+
+            <InputField
+              id="password"
+              label="Kata Sandi"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••••"
+              value={password}
+              onChange={setPassword}
+              icon={Lock}
+              autoComplete="current-password"
+              suffix={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              }
+            />
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2.5 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
+                />
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  Ingat saya
+                </span>
+              </label>
+              <Link href="#" className="text-sm font-semibold text-primary hover:underline underline-offset-4">
+                Lupa sandi?
+              </Link>
             </div>
-            <div className="text-center">
-              <h4 className="font-headline font-extrabold text-on-surface text-sm uppercase tracking-[0.1em]">Dinas Pertanian Aceh Utara</h4>
-              <p className="font-body text-[11px] text-on-surface-variant mt-1">Pemerintah Kabupaten Aceh Utara</p>
-            </div>
+
+            <motion.button
+              type="submit"
+              disabled={loading}
+              whileHover={{ scale: loading ? 1 : 1.01 }}
+              whileTap={{ scale: loading ? 1 : 0.98 }}
+              className="relative w-full py-3.5 rounded-xl font-headline font-bold text-sm text-white flex items-center justify-center gap-2 overflow-hidden transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-1"
+              style={{
+                background: loading ? "#00450d" : "linear-gradient(135deg, #00450d 0%, #1b6d24 100%)",
+                boxShadow: "0 4px 20px rgba(0,69,13,0.35)",
+              }}
+            >
+              {loading ? (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4" />
+                  Login ke Sistem
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </motion.button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 my-8">
+            <div className="flex-1 h-[1px] bg-border" />
+            <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">atau</span>
+            <div className="flex-1 h-[1px] bg-border" />
           </div>
-        </div>
-        
-        {/* Decorative Organic Pattern Subtly in BG */}
-        <div className="absolute bottom-0 right-0 opacity-5 pointer-events-none">
-          <span className="material-symbols-outlined text-[300px]" data-icon="grid_guides">grid_guides</span>
-        </div>
-        
-        {/* Global Institutional Signature (Fixed position as per design system) */}
-        <div className="absolute bottom-6 left-6 z-50 pointer-events-none hidden md:block">
-          <span className="text-surface font-body text-[10px] tracking-[0.2em] font-medium uppercase opacity-50">
-            Dinas Pertanian dan Tanaman Pangan Kabupaten Aceh Utara
-          </span>
-        </div>
-      </section>
+
+          {/* Register link */}
+          <p className="text-center text-sm text-muted-foreground">
+            Belum punya akun?{" "}
+            <Link href="/register" className="font-bold text-primary hover:underline underline-offset-4">
+              Daftar Sekarang
+            </Link>
+          </p>
+
+          {/* Footer */}
+        </motion.div>
+      </div>
     </main>
   );
 }
