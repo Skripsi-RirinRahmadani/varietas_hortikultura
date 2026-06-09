@@ -232,7 +232,7 @@ export default function Sidebar() {
           <div className="space-y-0.5">
             <SideNavItem href="/dashboard" label="Dasbor" icon={IconLayoutDashboard} active={isActive("/dashboard")} />
             <SideNavItem href="/dashboard/data" label="Manajemen Data" icon={IconDatabase} active={isActive("/dashboard/data")} />
-            <SideNavItem href="/dashboard/map" label="Peta Sebaran" icon={IconMap2} active={isActive("/dashboard/map")} />
+            {/* <SideNavItem href="/dashboard/map" label="Peta Sebaran" icon={IconMap2} active={isActive("/dashboard/map")} /> */}
           </div>
 
           {/* Rekomendasi */}
@@ -439,7 +439,6 @@ export default function Sidebar() {
             </motion.div>
           </Link>
 
-          <BottomNavItem href="/dashboard/map" label="Peta" Icon={IconMap2} active={isActive("/dashboard/map")} />
           <BottomNavItem href="/dashboard/results" label="Histori" Icon={IconHistory} active={isActive("/dashboard/results")} />
         </div>
       </div>

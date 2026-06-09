@@ -410,6 +410,8 @@ function TabVarietas({ commodities }: { commodities: Commodity[] }) {
   const [data, setData] = useState<Variety[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("name");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState<Variety | null>(null);
@@ -424,7 +426,7 @@ function TabVarietas({ commodities }: { commodities: Commodity[] }) {
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
-  useEffect(() => { setPage(1); }, [search]);
+  useEffect(() => { setPage(1); }, [search, sortField, sortDir]);
 
   const openAdd = () => { setSelected(null); setForm({ status: "Biasa", commodity_id: commodities[0]?.id }); setModalOpen(true); };
   const openEdit = (item: Variety) => { setSelected(item); setForm({ ...item }); setModalOpen(true); };
@@ -445,8 +447,28 @@ function TabVarietas({ commodities }: { commodities: Commodity[] }) {
     fetch();
   };
 
-  const filtered = data.filter(v => !search || v.name.toLowerCase().includes(search.toLowerCase()) || v.commodity?.name.toLowerCase().includes(search.toLowerCase()));
+  const toggleSort = (field: string) => {
+    if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortField(field); setSortDir("asc"); }
+  };
+
+  const filtered = data
+    .filter(v => !search || v.name.toLowerCase().includes(search.toLowerCase()) || v.commodity?.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      const va = sortField === "commodity" ? (a.commodity?.name ?? "") : (a as any)[sortField] ?? "";
+      const vb = sortField === "commodity" ? (b.commodity?.name ?? "") : (b as any)[sortField] ?? "";
+      return sortDir === "asc" ? (va < vb ? -1 : 1) : (va > vb ? -1 : 1);
+    });
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const cols = [
+    { label: "Nama Varietas", field: "name" },
+    { label: "Komoditas", field: "commodity" },
+    { label: "Umur Panen", field: "harvest_age_days" },
+    { label: "Hasil/Ha", field: "yield_per_ha" },
+    { label: "Ketahanan", field: "resistance" },
+    { label: "Status", field: "status" },
+  ];
 
   return (
     <>
@@ -457,8 +479,11 @@ function TabVarietas({ commodities }: { commodities: Commodity[] }) {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              {["Nama Varietas", "Komoditas", "Umur Panen", "Hasil/Ha", "Ketahanan", "Status"].map(h => (
-                <th key={h} className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{h}</th>
+              {cols.map(c => (
+                <th key={c.field} onClick={() => toggleSort(c.field)}
+                  className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                  <div className="flex items-center gap-1.5">{c.label}<SortIcon active={sortField === c.field} dir={sortDir} /></div>
+                </th>
               ))}
               <th className="px-5 py-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Aksi</th>
             </tr>
@@ -561,6 +586,8 @@ function TabWilayah() {
   const [data, setData] = useState<District[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("name");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState<District | null>(null);
@@ -575,7 +602,7 @@ function TabWilayah() {
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
-  useEffect(() => { setPage(1); }, [search]);
+  useEffect(() => { setPage(1); }, [search, sortField, sortDir]);
 
   const openAdd = () => { setSelected(null); setForm({}); setModalOpen(true); };
   const openEdit = (item: District) => { setSelected(item); setForm({ ...item }); setModalOpen(true); };
@@ -595,8 +622,24 @@ function TabWilayah() {
     fetch();
   };
 
-  const filtered = data.filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()) || d.description?.toLowerCase().includes(search.toLowerCase()));
+  const toggleSort = (field: string) => {
+    if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortField(field); setSortDir("asc"); }
+  };
+
+  const filtered = data
+    .filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()) || d.description?.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      const va = (a as any)[sortField] ?? ""; const vb = (b as any)[sortField] ?? "";
+      return sortDir === "asc" ? (va < vb ? -1 : 1) : (va > vb ? -1 : 1);
+    });
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const cols = [
+    { label: "Nama Kecamatan", field: "name" },
+    { label: "Deskripsi", field: "description" },
+    { label: "Dibuat", field: "created_at" },
+  ];
 
   return (
     <>
@@ -607,8 +650,12 @@ function TabWilayah() {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              {["#", "Nama Kecamatan", "Deskripsi", "Dibuat"].map(h => (
-                <th key={h} className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{h}</th>
+              <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground w-12">#</th>
+              {cols.map(c => (
+                <th key={c.field} onClick={() => toggleSort(c.field)}
+                  className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                  <div className="flex items-center gap-1.5">{c.label}<SortIcon active={sortField === c.field} dir={sortDir} /></div>
+                </th>
               ))}
               <th className="px-5 py-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Aksi</th>
             </tr>
@@ -682,6 +729,8 @@ function TabPrediksi() {
   const [data, setData] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("created_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
 
   const fetch = useCallback(async () => {
@@ -692,7 +741,7 @@ function TabPrediksi() {
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
-  useEffect(() => { setPage(1); }, [search]);
+  useEffect(() => { setPage(1); }, [search, sortField, sortDir]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Hapus data prediksi ini?")) return;
@@ -700,12 +749,30 @@ function TabPrediksi() {
     fetch();
   };
 
-  const filtered = data.filter(d => !search ||
-    d.variety_name.toLowerCase().includes(search.toLowerCase()) ||
-    d.soil_type.toLowerCase().includes(search.toLowerCase()) ||
-    d.identified_location?.toLowerCase().includes(search.toLowerCase())
-  );
+  const toggleSort = (field: string) => {
+    if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortField(field); setSortDir("asc"); }
+  };
+
+  const filtered = data
+    .filter(d => !search ||
+      d.variety_name.toLowerCase().includes(search.toLowerCase()) ||
+      d.soil_type.toLowerCase().includes(search.toLowerCase()) ||
+      d.identified_location?.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const va = (a as any)[sortField] ?? ""; const vb = (b as any)[sortField] ?? "";
+      return sortDir === "asc" ? (va < vb ? -1 : 1) : (va > vb ? -1 : 1);
+    });
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const cols = [
+    { label: "Varietas", field: "variety_name" },
+    { label: "Lokasi", field: "identified_location" },
+    { label: "Parameter", field: "ph" },
+    { label: "Akurasi", field: "confidence_score" },
+    { label: "Tanggal", field: "created_at" },
+  ];
 
   return (
     <>
@@ -716,8 +783,11 @@ function TabPrediksi() {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              {["Varietas", "Lokasi", "Parameter", "Akurasi", "Tanggal"].map(h => (
-                <th key={h} className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{h}</th>
+              {cols.map(c => (
+                <th key={c.field} onClick={() => toggleSort(c.field)}
+                  className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                  <div className="flex items-center gap-1.5">{c.label}<SortIcon active={sortField === c.field} dir={sortDir} /></div>
+                </th>
               ))}
               <th className="px-5 py-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Aksi</th>
             </tr>
@@ -792,6 +862,8 @@ function TabPengguna() {
   const [data, setData] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("updated_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
 
   const fetch = useCallback(async () => {
@@ -802,12 +874,26 @@ function TabPengguna() {
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
-  useEffect(() => { setPage(1); }, [search]);
+  useEffect(() => { setPage(1); }, [search, sortField, sortDir]);
 
-  const filtered = data.filter(d => !search ||
-    d.full_name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const toggleSort = (field: string) => {
+    if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortField(field); setSortDir("asc"); }
+  };
+
+  const filtered = data
+    .filter(d => !search || d.full_name?.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      const va = (a as any)[sortField] ?? ""; const vb = (b as any)[sortField] ?? "";
+      return sortDir === "asc" ? (va < vb ? -1 : 1) : (va > vb ? -1 : 1);
+    });
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const cols = [
+    { label: "Pengguna", field: "full_name" },
+    { label: "ID", field: "id" },
+    { label: "Terakhir Update", field: "updated_at" },
+  ];
 
   return (
     <>
@@ -824,8 +910,11 @@ function TabPengguna() {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              {["Pengguna", "ID", "Terakhir Update"].map(h => (
-                <th key={h} className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{h}</th>
+              {cols.map(c => (
+                <th key={c.field} onClick={() => toggleSort(c.field)}
+                  className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                  <div className="flex items-center gap-1.5">{c.label}<SortIcon active={sortField === c.field} dir={sortDir} /></div>
+                </th>
               ))}
             </tr>
           </thead>
