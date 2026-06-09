@@ -1,239 +1,148 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog } from 'radix-ui';
-import { supabase } from '@/lib/supabase';
-import { Commodity, District } from '@/lib/types';
-import { Button } from './ui/button';
+"use client";
 
-interface CommodityDialogProps {
-  commodity?: Commodity | null;
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { Commodity, District } from "@/lib/types";
+import { motion, AnimatePresence } from "framer-motion";
+import { IconX } from "@tabler/icons-react";
+
+interface Props {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  commodity: Commodity | null;
   districts: District[];
   onSuccess: () => void;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
 }
 
-export default function CommodityDialog({ 
-  commodity, 
-  districts, 
-  onSuccess, 
-  open, 
-  onOpenChange 
-}: CommodityDialogProps) {
-  const [formData, setFormData] = useState<Partial<Commodity>>({
-    name: '',
-    soil_type: '',
-    ph_min: 0,
-    ph_max: 14,
-    rainfall_min: 0,
-    rainfall_max: 5000,
-    temp_min: 0,
-    temp_max: 50,
-    district_id: '',
-    status: 'Biasa'
-  });
-  const [loading, setLoading] = useState(false);
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function Input({ value, onChange, placeholder, type = "text", step }: {
+  value: any; onChange: (v: any) => void; placeholder?: string; type?: string; step?: string;
+}) {
+  return (
+    <input
+      type={type} step={step} value={value ?? ""} placeholder={placeholder}
+      onChange={(e) => onChange(type === "number" ? parseFloat(e.target.value) || "" : e.target.value)}
+      className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+    />
+  );
+}
+
+export default function CommodityDialog({ open, onOpenChange, commodity, districts, onSuccess }: Props) {
+  const [form, setForm] = useState<Partial<Commodity>>({});
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (commodity) {
-      setFormData({
-        name: commodity.name,
-        soil_type: commodity.soil_type,
-        ph_min: commodity.ph_min,
-        ph_max: commodity.ph_max,
-        rainfall_min: commodity.rainfall_min,
-        rainfall_max: commodity.rainfall_max,
-        temp_min: commodity.temp_min,
-        temp_max: commodity.temp_max,
-        district_id: commodity.district_id,
-        status: commodity.status
-      });
-    } else {
-      setFormData({
-        name: '',
-        soil_type: '',
-        ph_min: 0,
-        ph_max: 14,
-        rainfall_min: 0,
-        rainfall_max: 5000,
-        temp_min: 0,
-        temp_max: 50,
-        district_id: districts[0]?.id || '',
-        status: 'Biasa'
-      });
+    if (open) {
+      setForm(commodity ? { ...commodity } : { status: "Biasa", district_id: districts[0]?.id });
+      setError("");
     }
-  }, [commodity, districts]);
+  }, [open, commodity, districts]);
+
+  const set = (key: keyof Commodity) => (v: any) => setForm(f => ({ ...f, [key]: v }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      if (commodity?.id) {
-        const { error } = await supabase
-          .from('commodities')
-          .update(formData)
-          .eq('id', commodity.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('commodities')
-          .insert([formData]);
-        if (error) throw error;
-      }
-      onSuccess();
-      onOpenChange(false);
-    } catch (error) {
-      console.error('Error saving commodity:', error);
-      alert('Gagal menyimpan data.');
-    } finally {
-      setLoading(false);
-    }
+    if (!form.name?.trim()) { setError("Nama komoditas wajib diisi."); return; }
+    setSaving(true); setError("");
+    const payload = {
+      name: form.name, image_url: form.image_url || null, soil_type: form.soil_type || null,
+      ph_min: form.ph_min, ph_max: form.ph_max,
+      rainfall_min: form.rainfall_min, rainfall_max: form.rainfall_max,
+      temp_min: form.temp_min, temp_max: form.temp_max,
+      district_id: form.district_id, status: form.status || "Biasa",
+    };
+    const { error: err } = commodity
+      ? await supabase.from("commodities").update(payload).eq("id", commodity.id)
+      : await supabase.from("commodities").insert([payload]);
+    setSaving(false);
+    if (err) { setError(err.message); return; }
+    onSuccess(); onOpenChange(false);
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-on-surface/20 backdrop-blur-sm z-[100] animate-in fade-in duration-300" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-surface-container-lowest rounded-2xl shadow-2xl p-8 z-[101] animate-in zoom-in-95 fade-in duration-300 border border-outline-variant/10">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <Dialog.Title className="text-2xl font-bold font-headline text-on-surface">
-                {commodity ? 'Edit Data Komoditas' : 'Tambah Komoditas Baru'}
-              </Dialog.Title>
-              <Dialog.Description className="text-sm text-on-surface-variant opacity-70">
-                Lengkapi informasi parameter lingkungan untuk optimasi pertumbuhan varietas.
-              </Dialog.Description>
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => onOpenChange(false)} />
+          <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }} transition={{ duration: 0.2 }}
+            className="relative w-full max-w-lg rounded-2xl bg-card border border-border shadow-2xl overflow-hidden z-10">
+
+            <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-border">
+              <div>
+                <h2 className="font-headline font-black text-lg text-foreground">
+                  {commodity ? "Edit Komoditas" : "Tambah Komoditas"}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Parameter lingkungan tanaman hortikultura</p>
+              </div>
+              <button onClick={() => onOpenChange(false)} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+                <IconX size={16} />
+              </button>
             </div>
-            <Dialog.Close className="p-2 hover:bg-surface-container rounded-full transition-colors">
-              <span className="material-symbols-outlined text-on-surface-variant">close</span>
-            </Dialog.Close>
-          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-1.5 col-span-2">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Nama Komoditas</label>
-                <div className="group relative">
-                  <input
-                    required
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none transition-all"
-                    value={formData.name}
-                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Contoh: Padi IR64"
-                  />
-                  <div className="absolute bottom-0 left-0 h-0.5 bg-primary w-0 group-focus-within:w-full transition-all duration-300" />
-                </div>
+            <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
+              <Field label="Nama Komoditas">
+                <Input value={form.name} onChange={set("name")} placeholder="Contoh: Cabai Merah" />
+              </Field>
+              <Field label="Jenis Tanah">
+                <Input value={form.soil_type} onChange={set("soil_type")} placeholder="Contoh: Latosol, Andosol" />
+              </Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="pH Min"><Input type="number" step="0.1" value={form.ph_min} onChange={set("ph_min")} placeholder="5.5" /></Field>
+                <Field label="pH Max"><Input type="number" step="0.1" value={form.ph_max} onChange={set("ph_max")} placeholder="7.0" /></Field>
               </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Jenis Tanah</label>
-                <div className="group relative">
-                  <input
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none transition-all"
-                    value={formData.soil_type}
-                    onChange={e => setFormData({ ...formData, soil_type: e.target.value })}
-                    placeholder="Contoh: Aluvial"
-                  />
-                  <div className="absolute bottom-0 left-0 h-0.5 bg-primary w-0 group-focus-within:w-full transition-all duration-300" />
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Curah Hujan Min (mm)"><Input type="number" value={form.rainfall_min} onChange={set("rainfall_min")} placeholder="1500" /></Field>
+                <Field label="Curah Hujan Max (mm)"><Input type="number" value={form.rainfall_max} onChange={set("rainfall_max")} placeholder="3000" /></Field>
               </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Wilayah Kecamatan</label>
-                <select
-                  className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none appearance-none"
-                  value={formData.district_id}
-                  onChange={e => setFormData({ ...formData, district_id: e.target.value })}
-                >
-                  {districts.map(d => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
-                  ))}
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Suhu Min (°C)"><Input type="number" step="0.1" value={form.temp_min} onChange={set("temp_min")} placeholder="20" /></Field>
+                <Field label="Suhu Max (°C)"><Input type="number" step="0.1" value={form.temp_max} onChange={set("temp_max")} placeholder="32" /></Field>
+              </div>
+              <Field label="Wilayah">
+                <select value={form.district_id || ""} onChange={e => set("district_id")(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all">
+                  <option value="">Pilih wilayah</option>
+                  {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                 </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">pH Tanah (Min - Max)</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none"
-                    value={formData.ph_min}
-                    onChange={e => setFormData({ ...formData, ph_min: parseFloat(e.target.value) })}
-                  />
-                  <span className="text-on-surface-variant">/</span>
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none"
-                    value={formData.ph_max}
-                    onChange={e => setFormData({ ...formData, ph_max: parseFloat(e.target.value) })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Curah Hujan (Min - Max) mm</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none"
-                    value={formData.rainfall_min}
-                    onChange={e => setFormData({ ...formData, rainfall_min: parseFloat(e.target.value) })}
-                  />
-                  <span className="text-on-surface-variant">/</span>
-                  <input
-                    type="number"
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none"
-                    value={formData.rainfall_max}
-                    onChange={e => setFormData({ ...formData, rainfall_max: parseFloat(e.target.value) })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Suhu (Min - Max) °C</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none"
-                    value={formData.temp_min}
-                    onChange={e => setFormData({ ...formData, temp_min: parseFloat(e.target.value) })}
-                  />
-                  <span className="text-on-surface-variant">/</span>
-                  <input
-                    type="number"
-                    className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none"
-                    value={formData.temp_max}
-                    onChange={e => setFormData({ ...formData, temp_max: parseFloat(e.target.value) })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Status Komoditas</label>
-                <select
-                  className="w-full bg-surface-container-highest px-4 py-3 rounded-lg text-on-surface outline-none appearance-none"
-                  value={formData.status}
-                  onChange={e => setFormData({ ...formData, status: e.target.value as any })}
-                >
+              </Field>
+              <Field label="URL Gambar (opsional)">
+                <Input value={form.image_url} onChange={set("image_url")} placeholder="https://..." />
+              </Field>
+              <Field label="Status">
+                <select value={form.status || "Biasa"} onChange={e => set("status")(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all">
                   <option value="Biasa">Biasa</option>
                   <option value="Unggulan">Unggulan</option>
                 </select>
-              </div>
-            </div>
+              </Field>
 
-            <div className="pt-4 flex justify-end gap-3 border-t border-outline-variant/10">
-              <Dialog.Close asChild>
-                <Button variant="ghost" type="button">Batal</Button>
-              </Dialog.Close>
-              <Button disabled={loading} type="submit" className="min-w-[120px]">
-                {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
-              </Button>
-            </div>
-          </form>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+              {error && (
+                <div className="px-4 py-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs font-medium text-destructive">{error}</div>
+              )}
+
+              <div className="flex gap-3 pt-2 border-t border-border">
+                <button type="button" onClick={() => onOpenChange(false)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-semibold hover:bg-muted transition-all">Batal</button>
+                <button type="submit" disabled={saving}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-60"
+                  style={{ background: "linear-gradient(135deg,#00450d,#1b6d24)" }}>
+                  {saving ? "Menyimpan..." : "Simpan"}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

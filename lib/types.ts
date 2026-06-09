@@ -45,6 +45,30 @@ export interface Prediction {
   user_id?: string;
 }
 
+export interface Variety {
+  id: string;
+  name: string;
+  commodity_id?: string;
+  description?: string;
+  harvest_age_days?: number;
+  yield_per_ha?: number;
+  resistance?: string;
+  source?: string;
+  status: 'Unggulan' | 'Biasa';
+  created_at: string;
+  // Join
+  commodity?: { name: string };
+}
+
+export interface Profile {
+  id: string;
+  full_name?: string;
+  avatar_url?: string;
+  updated_at?: string;
+  // from auth.users via join
+  email?: string;
+}
+
 export interface DashboardMetadata {
   key: string;
   value: any;
