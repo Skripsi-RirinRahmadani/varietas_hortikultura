@@ -161,18 +161,25 @@ export default function RegisterPage() {
       });
       if (authError) throw authError;
 
-      // Create profile for new user with default role 'user'
+      // Create or update profile for new user
+      // Note: Auth trigger may have already created profile, so use upsert
       if (authData.user) {
         const { error: profileError } = await supabase
           .from("profiles")
-          .insert([
+          .upsert([
             {
               id: authData.user.id,
               full_name: fullName,
               role: 'user',
             },
-          ]);
-        if (profileError) console.error("Error creating profile:", profileError);
+          ], { onConflict: 'id' });
+        if (profileError) {
+          console.error("Error creating/updating profile:", {
+            code: (profileError as any).code,
+            message: profileError.message,
+            details: (profileError as any).details,
+          });
+        }
       }
 
       setSuccess(true);
