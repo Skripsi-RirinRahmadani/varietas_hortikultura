@@ -418,6 +418,9 @@ function TabVarietas({ commodities }: { commodities: Commodity[] }) {
   const [selected, setSelected] = useState<Variety | null>(null);
   const [form, setForm] = useState<Partial<Variety>>({});
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -428,13 +431,62 @@ function TabVarietas({ commodities }: { commodities: Commodity[] }) {
 
   useEffect(() => { fetch(); }, [fetch]);
   useEffect(() => { setPage(1); }, [search, sortField, sortDir]);
+  useEffect(() => {
+    if (modalOpen) {
+      setImagePreview(form.image_url || "");
+    }
+  }, [modalOpen, form.image_url]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert("Hanya file gambar yang diizinkan");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran gambar maksimal 5MB");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { uploadFileToStorage, STORAGE_BUCKETS } = await import("@/lib/storage");
+      const publicUrl = await uploadFileToStorage(STORAGE_BUCKETS.VARIETIES, file, 'images');
+      if (publicUrl) {
+        setForm(f => ({ ...f, image_url: publicUrl }));
+        setImagePreview(publicUrl);
+        console.log("✅ Image uploaded:", publicUrl);
+      } else {
+        alert("Gagal upload gambar");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Error saat upload gambar");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const openAdd = () => { setSelected(null); setForm({ status: "Biasa", commodity_id: commodities[0]?.id }); setModalOpen(true); };
   const openEdit = (item: Variety) => { setSelected(item); setForm({ ...item }); setModalOpen(true); };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true);
-    const payload = { name: form.name, commodity_id: form.commodity_id, description: form.description, harvest_age_days: form.harvest_age_days, yield_per_ha: form.yield_per_ha, resistance: form.resistance, source: form.source, status: form.status };
+    const payload = {
+      name: form.name,
+      commodity_id: form.commodity_id,
+      description: form.description,
+      harvest_age_days: form.harvest_age_days,
+      yield_per_ha: form.yield_per_ha,
+      resistance: form.resistance,
+      source: form.source,
+      status: form.status,
+      image_url: form.image_url || null
+    };
     const { error } = selected
       ? await supabase.from("varieties").update(payload).eq("id", selected.id)
       : await supabase.from("varieties").insert([payload]);
@@ -559,6 +611,25 @@ function TabVarietas({ commodities }: { commodities: Commodity[] }) {
           <Field label="Sumber / Instansi"><Input value={form.source} onChange={v => setForm(f => ({ ...f, source: v }))} placeholder="BPTP Aceh" /></Field>
           <Field label="Deskripsi"><textarea value={form.description || ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} placeholder="Keterangan tambahan..."
             className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none" /></Field>
+          <Field label="Gambar Varietas (opsional)">
+            <div className="space-y-2">
+              {imagePreview && (
+                <div className="relative w-full h-32 rounded-xl overflow-hidden border border-border bg-muted/50 flex items-center justify-center">
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => { setForm(f => ({ ...f, image_url: "" })); setImagePreview(""); }} className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-all">
+                    <IconX size={14} />
+                  </button>
+                </div>
+              )}
+              <div onClick={() => fileInputRef.current?.click()} className="flex flex-col items-center justify-center w-full p-3 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
+                <IconUpload size={18} className="text-muted-foreground mb-1" />
+                <p className="text-xs font-semibold text-muted-foreground">{uploading ? "Uploading..." : "Klik upload gambar"}</p>
+                <p className="text-[10px] text-muted-foreground/60">Max 5MB</p>
+              </div>
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} className="hidden" />
+              <Input value={form.image_url || ""} onChange={v => setForm(f => ({ ...f, image_url: v }))} placeholder="Atau paste URL gambar..." />
+            </div>
+          </Field>
           <Field label="Status">
             <select value={form.status || "Biasa"} onChange={e => setForm(f => ({ ...f, status: e.target.value as any }))}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all">

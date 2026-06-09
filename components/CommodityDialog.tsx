@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { Commodity, District } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { IconX } from "@tabler/icons-react";
+import { IconX, IconUpload, IconPhoto } from "@tabler/icons-react";
+import { uploadFileToStorage, STORAGE_BUCKETS } from "@/lib/storage";
 
 interface Props {
   open: boolean;
@@ -38,16 +39,62 @@ function Input({ value, onChange, placeholder, type = "text", step }: {
 export default function CommodityDialog({ open, onOpenChange, commodity, districts, onSuccess }: Props) {
   const [form, setForm] = useState<Partial<Commodity>>({});
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
       setForm(commodity ? { ...commodity } : { status: "Biasa", district_id: districts[0]?.id });
       setError("");
+      setImagePreview(commodity?.image_url || "");
     }
   }, [open, commodity, districts]);
 
   const set = (key: keyof Commodity) => (v: any) => setForm(f => ({ ...f, [key]: v }));
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError("Hanya file gambar yang diizinkan");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Ukuran gambar maksimal 5MB");
+      return;
+    }
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const publicUrl = await uploadFileToStorage(
+        STORAGE_BUCKETS.COMMODITIES,
+        file,
+        'images'
+      );
+
+      if (publicUrl) {
+        set("image_url")(publicUrl);
+        setImagePreview(publicUrl);
+        console.log("✅ Image uploaded:", publicUrl);
+      } else {
+        setError("Gagal upload gambar");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      setError("Error saat upload gambar");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,8 +163,61 @@ export default function CommodityDialog({ open, onOpenChange, commodity, distric
                   {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                 </select>
               </Field>
-              <Field label="URL Gambar (opsional)">
-                <Input value={form.image_url} onChange={set("image_url")} placeholder="https://..." />
+              <Field label="Gambar Komoditas (opsional)">
+                <div className="space-y-2">
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border bg-muted/50 flex items-center justify-center">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          set("image_url")("");
+                          setImagePreview("");
+                        }}
+                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-all"
+                      >
+                        <IconX size={14} />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Upload Button */}
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-col items-center justify-center w-full p-4 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer"
+                  >
+                    <IconUpload size={20} className="text-muted-foreground mb-1.5" />
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {uploading ? "Uploading..." : "Klik untuk upload gambar"}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                      {imagePreview ? "Klik untuk ganti gambar" : "Max 5MB"}
+                    </p>
+                  </div>
+
+                  {/* Hidden File Input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                    className="hidden"
+                  />
+
+                  {/* Manual URL Input (fallback) */}
+                  <div className="relative">
+                    <Input
+                      value={form.image_url || ""}
+                      onChange={set("image_url")}
+                      placeholder="Atau paste URL gambar..."
+                    />
+                    <span className="text-[10px] text-muted-foreground absolute right-3 top-2.5">
+                      {form.image_url ? "✅" : "URL"}
+                    </span>
+                  </div>
+                </div>
               </Field>
               <Field label="Status">
                 <select value={form.status || "Biasa"} onChange={e => set("status")(e.target.value)}
