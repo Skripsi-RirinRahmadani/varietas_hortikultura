@@ -17,6 +17,7 @@ import {
   MapPin,
   BarChart3,
   LogIn,
+  ArrowLeft,
 } from "lucide-react";
 
 // ── Floating particle for left panel ────────────────────────────────────────
@@ -294,12 +295,24 @@ export default function LoginPage() {
           transition={{ duration: 0.7 }}
           className="relative w-full max-w-[400px]"
         >
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-              <Leaf className="w-5 h-5 text-primary-foreground" />
+          {/* Mobile logo & back button */}
+          <div className="lg:hidden flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+                <Leaf className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <span className="font-headline font-black text-sm uppercase tracking-widest text-foreground">SiVartas</span>
             </div>
-            <span className="font-headline font-black text-sm uppercase tracking-widest text-foreground">SiVartas</span>
+            <Link href="/" className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+              <ArrowLeft className="w-3.5 h-3.5" /> Kembali
+            </Link>
+          </div>
+
+          {/* Back button (Desktop) */}
+          <div className="hidden lg:flex mb-8">
+            <Link href="/" className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors">
+              <ArrowLeft className="w-3.5 h-3.5" /> Kembali ke Beranda
+            </Link>
           </div>
 
           {/* Header */}
