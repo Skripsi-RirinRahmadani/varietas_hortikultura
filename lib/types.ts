@@ -56,6 +56,7 @@ export interface Variety {
   source?: string;
   status: 'Unggulan' | 'Biasa';
   created_at: string;
+  image_url?: string;
   // Join
   commodity?: { name: string };
 }
