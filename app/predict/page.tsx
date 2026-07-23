@@ -473,21 +473,14 @@ export default function PublicPredictPage() {
                   ) : (
                     <motion.div key="results" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                       className="space-y-5 flex-1">
-                      {/* Location + Confidence */}
-                      <div className="grid grid-cols-2 gap-4">
+                      {/* Location */}
+                      <div className="grid grid-cols-1 gap-4">
                         <div className="rounded-2xl border border-border bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 p-5">
                           <div className="flex items-center gap-2 mb-2">
                             <IconMapPin size={15} className="text-blue-600 dark:text-blue-400" />
                             <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">Kecamatan</p>
                           </div>
                           <p className="text-2xl font-black text-blue-900 dark:text-blue-200">{result.identified_location}</p>
-                        </div>
-                        <div className="rounded-2xl border border-border bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-5">
-                          <div className="flex items-center gap-2 mb-2">
-                            <IconCheck size={15} className="text-green-600 dark:text-green-400" />
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-green-600 dark:text-green-400">Confidence</p>
-                          </div>
-                          <p className="text-2xl font-black text-green-900 dark:text-green-200">{result.location_confidence}</p>
                         </div>
                       </div>
 
